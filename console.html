@@ -3,20 +3,20 @@
 <style>
 *{box-sizing:border-box}
 body{font-family:Calibri,"Segoe UI",system-ui,sans-serif;background:#0f1b3d;color:#1f2937;margin:0;padding:0}
-.wrap{max-width:1080px;margin:0 auto;padding:24px}
+.wrap{max-width:1100px;margin:0 auto;padding:24px}
 h1{font-size:21px;color:#fff;margin:0 0 2px}.sub{color:#9fb0d6;font-size:13px;margin-bottom:16px}
 .card{background:#fff;border-radius:14px;padding:22px;margin-bottom:16px;box-shadow:0 10px 36px rgba(0,0,0,.25)}
 .warn{background:#fdeceb;color:#a3271b;border-left:4px solid #C0392B;padding:9px 12px;border-radius:8px;font-size:12.5px;margin-bottom:16px}
 .ok-note{background:#e7f4ee;color:#0f6b3c;border-left:4px solid #16904E;padding:9px 12px;border-radius:8px;font-size:12.5px;margin:10px 0}
 label{display:block;font-size:12px;color:#6b7280;margin:10px 0 4px;font-weight:600}
-input,select{width:100%;padding:9px 11px;border:1px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
-input:focus,select:focus{outline:2px solid #FA6706;outline-offset:1px;border-color:#FA6706}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid #FA6706;outline-offset:1px;border-color:#FA6706}
+textarea{min-height:90px;resize:vertical;font-family:Consolas,monospace;font-size:12.5px}
 .row{display:flex;gap:12px;flex-wrap:wrap}.row>div{flex:1;min-width:150px}
 button{background:#FA6706;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;padding:10px 16px}
 button:hover{background:#e35d04}button.ghost{background:#fff;color:#172554;border:1px solid #172554}button.ghost:hover{background:#f0f3f8}
 button[disabled]{opacity:.5;cursor:not-allowed}
 .gen{width:100%;margin-top:16px;padding:12px}
-textarea{width:100%;min-height:64px;margin-top:12px;border:1px solid #E5E7EB;border-radius:8px;padding:10px;font-family:Consolas,monospace;font-size:12px;resize:vertical}
 h2{font-size:16px;color:#172554;margin:0 0 4px}h3{font-size:14px;color:#172554;margin:14px 0 6px}
 .stats{display:flex;gap:10px;margin:10px 0 14px;flex-wrap:wrap}
 .stat{flex:1;min-width:110px;background:#F5F5F5;border-radius:10px;padding:10px 12px}.stat b{display:block;font-size:20px;color:#172554}.stat span{font-size:11.5px;color:#6b7280}
@@ -24,17 +24,23 @@ table{width:100%;border-collapse:collapse;font-size:13px}th{background:#172554;c
 td{padding:8px 10px;border-top:1px solid #eef0f3;vertical-align:middle}
 .pill{font-size:11px;font-weight:600;padding:2px 9px;border-radius:11px;white-space:nowrap}
 .ok{background:#e7f4ee;color:#0f6b3c}.soon{background:#fff3e0;color:#8a4b06}.exp{background:#fdeceb;color:#a3271b}.grey{background:#eef0f3;color:#555}
-.act{color:#224289;cursor:pointer;font-size:12px;margin-right:10px;font-weight:600;background:none;border:none;padding:0}.act:hover{text-decoration:underline}
+.act{color:#224289;cursor:pointer;font-size:12px;margin-right:8px;font-weight:600;background:none;border:none;padding:0}.act:hover{text-decoration:underline}
 .act.red{color:#C0392B}
 .toolbar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:10px;flex-wrap:wrap}
 small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-weight:700;letter-spacing:.05em}
-.tablewrap{max-height:440px;overflow:auto;border:1px solid #eef0f3;border-radius:10px}
+.tablewrap{max-height:460px;overflow:auto;border:1px solid #eef0f3;border-radius:10px}
 .code-badge{background:#0f1c31;color:#ffd97a;font-family:Consolas,monospace;font-weight:700;padding:2px 8px;border-radius:6px;font-size:12.5px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:720px){.grid2{grid-template-columns:1fr}}
 .hidden{display:none!important}
-.linkbox{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}.linkbox input{font-family:Consolas,monospace;font-size:12px}
-
-/* ---- Écran de connexion ---- */
+.seg{display:inline-flex;border:1px solid #E5E7EB;border-radius:9px;overflow:hidden;margin-bottom:8px}
+.seg button{background:#fff;color:#172554;border:none;border-radius:0;padding:8px 14px;font-size:13px}
+.seg button.active{background:#172554;color:#fff}
+/* logo + auth */
+.badge{display:inline-block;background:linear-gradient(135deg,#FA6706,#ff9a44);color:#fff;font-weight:800;letter-spacing:.16em;font-size:1.05rem;padding:9px 20px;border-radius:11px;box-shadow:0 6px 18px rgba(250,103,6,.4)}
+.logo-plate{display:inline-block;background:#fff;border-radius:12px;padding:10px 15px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.logo-svg{display:block;height:46px;width:auto}
+.apphead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.apphead .logo-plate{padding:7px 12px}.apphead .logo-svg{height:34px}
 .auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:26px 18px;
   background:radial-gradient(1100px 560px at 12% -10%,#25406b 0%,transparent 60%),
              radial-gradient(900px 640px at 112% 112%,#2b4a7d 0%,transparent 55%),
@@ -42,15 +48,9 @@ small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-w
 .auth-card{width:100%;max-width:460px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5);animation:rise .5s ease}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .auth-top{background:linear-gradient(135deg,#12233f,#1d3557);padding:30px 34px 24px;border-bottom:4px solid #FA6706;text-align:center}
-.badge{display:inline-block;background:linear-gradient(135deg,#FA6706,#ff9a44);color:#fff;font-weight:800;letter-spacing:.16em;font-size:1.05rem;padding:9px 20px;border-radius:11px;box-shadow:0 6px 18px rgba(250,103,6,.4)}
-.logo-plate{display:inline-block;background:#fff;border-radius:12px;padding:10px 15px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
-.logo-svg{display:block;height:46px;width:auto}
-.apphead .logo-plate{padding:7px 12px}.apphead .logo-svg{height:34px}
 .auth-top h1{color:#fff;font-weight:400;font-size:1.45rem;margin:16px 0 3px}
 .auth-top p{color:#c9d3e4;font-style:italic;font-size:.9rem}
 .auth-body{padding:24px 34px 30px}
-.apphead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.apphead .badge{font-size:.85rem;padding:6px 13px;letter-spacing:.14em}
 .msg{font-size:13px;margin-top:10px}
 </style></head><body>
 
@@ -97,13 +97,13 @@ small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-w
         <text x="106" y="71" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" font-weight="600" fill="#2f6a92" letter-spacing="0.6">COMPÉTENCE · RIGUEUR · SATISFACTION</text>
       </svg>
     </div>
-    <div><h1>Console des examens</h1><div class="sub">Génère les clés d'accès et reçois les résultats des candidats</div></div>
+    <div><h1>Console des examens</h1><div class="sub">Crée les examens, génère les codes personnels et reçois les résultats</div></div>
   </div>
 
-  <!-- Générer une clé -->
+  <!-- Créer un examen -->
   <div class="card">
-    <h2>Générer une clé d'accès (session d'examen)</h2>
-    <small>Une clé = une session. Tu la donnes à un groupe : chaque candidat compose sa propre copie.</small>
+    <h2>1. Créer un examen</h2>
+    <small>Un examen = une configuration (durée, questions…). Ensuite tu génères un code personnel par candidat.</small>
     <div class="grid2" style="margin-top:12px">
       <div>
         <label>Intitulé de l'examen</label>
@@ -126,49 +126,65 @@ small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-w
         </select>
         <label>Mélanger les questions et les options</label>
         <select id="c_melange"><option value="1" selected>Oui (recommandé)</option><option value="0">Non</option></select>
-        <label>Nombre de tentatives par personne</label>
-        <select id="c_tent"><option value="1" selected>1 seule tentative</option><option value="0">Illimité</option></select>
       </div>
     </div>
-    <label style="margin-top:12px">Clé personnalisée (optionnel — sinon générée automatiquement)</label>
-    <input id="c_code" placeholder="Ex. CORIS-PQ-2026" style="text-transform:uppercase">
-    <button class="gen" id="btnCreate">Générer la clé</button>
-    <div id="createOut" class="hidden">
-      <div class="ok-note">Clé créée : <span class="code-badge" id="newCode"></span></div>
-      <label>Lien à envoyer aux candidats</label>
-      <div class="linkbox">
-        <input id="newLink" readonly>
-        <button class="ghost" id="copyLink">Copier le lien</button>
-        <button class="ghost" id="copyCode">Copier la clé</button>
-      </div>
-    </div>
+    <button class="gen" id="btnCreate">Créer l'examen</button>
+    <div id="createOut" class="ok-note hidden"></div>
   </div>
 
-  <!-- Sessions -->
+  <!-- Liste des examens -->
   <div class="card">
-    <h2>Mes sessions d'examen</h2>
+    <h2>2. Mes examens</h2>
     <div class="stats" id="stats"></div>
     <div class="toolbar"><button class="ghost" id="btnRefresh">Actualiser</button></div>
     <div class="tablewrap">
-      <table><thead><tr><th>Clé</th><th>Examen</th><th>Durée</th><th>Résultat</th><th>Statut</th><th>Copies</th><th>Actions</th></tr></thead>
+      <table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Statut</th><th>Participants</th><th>Actions</th></tr></thead>
       <tbody id="sessRows"></tbody></table>
     </div>
     <small id="sessEmpty"></small>
   </div>
 
-  <!-- Résultats -->
+  <!-- Participants & codes -->
   <div class="card" id="resCard">
-    <h2>Résultats</h2>
-    <div id="resHint"><small>Clique sur « Voir résultats » d'une session ci-dessus pour afficher les copies des candidats.</small></div>
+    <h2>3. Participants &amp; codes</h2>
+    <div id="resHint"><small>Clique sur « Gérer » d'un examen ci-dessus pour générer des codes et voir les résultats.</small></div>
     <div id="resPanel" class="hidden">
       <h3 id="resTitle"></h3>
+
+      <!-- Génération de codes -->
+      <div style="background:#f8fafc;border:1px solid #eef0f3;border-radius:10px;padding:14px 16px;margin-bottom:14px">
+        <b style="font-size:13.5px;color:#172554">Générer des codes personnels</b>
+        <div class="seg" style="margin-top:8px">
+          <button id="segNombre" class="active">Par nombre</button>
+          <button id="segNoms">Par liste de noms</button>
+        </div>
+        <div id="boxNombre">
+          <label>Combien de codes ?</label>
+          <div class="row">
+            <div style="max-width:160px"><input id="g_count" type="number" value="10" min="1" max="500"></div>
+            <div style="flex:0 0 auto"><button id="btnGenNombre" style="margin-top:0">Générer</button></div>
+          </div>
+        </div>
+        <div id="boxNoms" class="hidden">
+          <label>Un nom par ligne (le code sera rattaché au nom)</label>
+          <textarea id="g_noms" placeholder="Awa Traoré&#10;Moussa Diallo&#10;Fatou Ndiaye"></textarea>
+          <button id="btnGenNoms" style="margin-top:8px">Générer les codes</button>
+        </div>
+        <div id="genOut" class="hidden" style="margin-top:12px">
+          <div class="ok-note" id="genMsg"></div>
+          <label>Liens à envoyer (un par candidat)</label>
+          <textarea id="genLinks" readonly style="min-height:120px"></textarea>
+          <button class="ghost" id="btnCopyLinks" style="margin-top:8px">Copier tous les liens</button>
+        </div>
+      </div>
+
       <div class="stats" id="resStats"></div>
       <div class="toolbar">
         <button class="ghost" id="btnExport">Exporter en CSV (Excel)</button>
         <button class="ghost" id="btnResRefresh">Actualiser</button>
       </div>
       <div class="tablewrap">
-        <table><thead><tr><th>Nom</th><th>Prénom</th><th>Structure</th><th>Score</th><th>%</th><th>Statut</th><th>Terminé le</th><th></th></tr></thead>
+        <table><thead><tr><th>Code</th><th>Nom</th><th>Prénom</th><th>Structure</th><th>Score</th><th>%</th><th>Statut</th><th>Terminé le</th><th>Actions</th></tr></thead>
         <tbody id="resRows"></tbody></table>
       </div>
       <small id="resEmpty"></small>
@@ -183,26 +199,30 @@ small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-w
 ============================================================ */
 const SUPABASE_URL = "https://dddrgmxkywjxxycfoiya.supabase.co";
 const ANON_KEY     = "sb_publishable_kCTukGId2HRQn7lqwZE-ug_DlCzCMiS";
-// Adresse publique de examen.html (là où tu l'héberges). À remplir UNE seule fois.
-// Tant qu'elle est vide, la console fonctionne mais ne fabrique pas le lien complet.
+// Adresse publique de examen.html (là où tu l'héberges).
 const EXAM_URL     = "https://segnoogo.github.io/examen/examen.html";
 /* ============================================================ */
 
 const FN = SUPABASE_URL.replace(/\/$/,'') + "/functions/v1/gerer-examens";
 const $ = (id)=>document.getElementById(id);
-let PW = "";       // mot de passe admin (gardé en mémoire pendant la session)
-let SESSIONS = [];
+let PW = "", SESSIONS = [], RES_CODE = "", RES_ROWS = [];
 
 async function api(payload){
   try{
-    const r = await fetch(FN, {
-      method:"POST",
+    const r = await fetch(FN, { method:"POST",
       headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+ANON_KEY, "apikey":ANON_KEY },
-      body: JSON.stringify(Object.assign({ motdepasse:PW }, payload))
-    });
+      body: JSON.stringify(Object.assign({ motdepasse:PW }, payload)) });
     return await r.json();
   }catch(e){ return { ok:false, raison:"Connexion impossible (vérifie SUPABASE_URL et Internet)." }; }
 }
+function lienPour(code){
+  if(!EXAM_URL) return "⚠ Renseigne EXAM_URL dans le code — code : "+code;
+  const sep = EXAM_URL.indexOf("?")>=0 ? "&" : "?";
+  return EXAM_URL + sep + "code=" + code;
+}
+function copy(txt,btn){ navigator.clipboard.writeText(txt).then(()=>{ const t=btn.textContent; btn.textContent="Copié !"; setTimeout(()=>btn.textContent=t,1200); }); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmt(iso){ try{ const d=new Date(iso); return d.toLocaleDateString('fr-FR')+" "+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
 
 /* ---------- Connexion ---------- */
 $("btnConnect").addEventListener("click", async ()=>{
@@ -216,157 +236,157 @@ $("btnConnect").addEventListener("click", async ()=>{
 });
 $("pw").addEventListener("keydown",e=>{ if(e.key==="Enter") $("btnConnect").click(); });
 
-/* ---------- Générer une clé ---------- */
+/* ---------- Créer un examen ---------- */
 $("btnCreate").addEventListener("click", async ()=>{
-  const payload = {
-    action:"create_session",
-    titre: $("c_titre").value.trim() || "Examen",
-    client: $("c_client").value.trim() || null,
-    examen: $("c_examen").value,
-    duree_min: parseInt($("c_duree").value,10)||45,
-    mode_resultat: $("c_mode").value,
-    melange: $("c_melange").value==="1",
-    une_tentative: $("c_tent").value==="1",
-    expire_le: $("c_exp").value || null,
-    code: $("c_code").value.trim() || null
-  };
+  const payload = { action:"create_session",
+    titre:$("c_titre").value.trim()||"Examen", client:$("c_client").value.trim()||null,
+    examen:$("c_examen").value, duree_min:parseInt($("c_duree").value,10)||45,
+    mode_resultat:$("c_mode").value, melange:$("c_melange").value==="1", expire_le:$("c_exp").value||null };
   $("btnCreate").disabled=true; $("btnCreate").textContent="Création…";
   const res = await api(payload);
-  $("btnCreate").disabled=false; $("btnCreate").textContent="Générer la clé";
+  $("btnCreate").disabled=false; $("btnCreate").textContent="Créer l'examen";
   if(!res.ok){ alert("Erreur : "+(res.raison||"inconnue")); return; }
-  const code = res.data.code;
-  $("newCode").textContent = code;
-  $("newLink").value = lienPour(code);
   $("createOut").classList.remove("hidden");
-  $("c_code").value="";
-  refresh();
+  $("createOut").innerHTML = 'Examen créé. Il apparaît dans la liste ci-dessous — clique sur <b>« Gérer »</b> pour générer les codes des candidats.';
+  await refresh();
+  voirParticipants(res.data.code);
 });
-function lienPour(code){
-  if(!EXAM_URL) return "⚠ Renseigne EXAM_URL dans le code (config en haut) — clé : "+code;
-  const sep = EXAM_URL.indexOf("?")>=0 ? "&" : "?";
-  return EXAM_URL + sep + "code=" + code;
-}
-$("copyLink").addEventListener("click", ()=>copy($("newLink").value, $("copyLink")));
-$("copyCode").addEventListener("click", ()=>copy($("newCode").textContent, $("copyCode")));
-function copy(txt,btn){ navigator.clipboard.writeText(txt).then(()=>{ const t=btn.textContent; btn.textContent="Copié !"; setTimeout(()=>btn.textContent=t,1200); }); }
 
-/* ---------- Sessions ---------- */
+/* ---------- Liste des examens ---------- */
 $("btnRefresh").addEventListener("click", refresh);
 async function refresh(){ const res = await api({ action:"list_sessions" }); if(res.ok) renderSessions(res.data); }
 
 function renderSessions(list){
   SESSIONS = list||[];
   const tb = $("sessRows"); tb.innerHTML="";
-  let nAct=0, nCopies=0, nFini=0;
+  let nAct=0, nPart=0, nFini=0;
   SESSIONS.forEach(s=>{
     if(s.statut==="actif") nAct++;
-    nCopies += s.copies||0; nFini += s.copies_terminees||0;
+    nPart += s.participants||0; nFini += s.termines||0;
     const modeLbl = {score:"Score",rien:"Rien",correction:"Correction"}[s.mode_resultat]||s.mode_resultat;
     const stat = s.statut==="actif" ? '<span class="pill ok">actif</span>' : '<span class="pill grey">fermé</span>';
-    const tr = document.createElement("tr");
+    const tr=document.createElement("tr");
     tr.innerHTML =
-      '<td><span class="code-badge">'+s.code+'</span></td>'+
       '<td>'+esc(s.titre||"")+'<br><small>'+esc(s.client||"")+'</small></td>'+
       '<td>'+(s.duree_min||45)+' min</td>'+
       '<td>'+modeLbl+'</td>'+
       '<td>'+stat+'</td>'+
-      '<td><b>'+(s.copies_terminees||0)+'</b> / '+(s.copies||0)+'</td>'+
+      '<td><b>'+(s.termines||0)+'</b> / '+(s.participants||0)+'</td>'+
       '<td>'+
-        '<button class="act" data-res="'+s.code+'">Voir résultats</button>'+
-        '<button class="act" data-link="'+s.code+'">Copier lien</button>'+
+        '<button class="act" data-res="'+s.code+'">Gérer</button>'+
         '<button class="act" data-toggle="'+s.code+'">'+(s.statut==="actif"?"Fermer":"Rouvrir")+'</button>'+
         '<button class="act red" data-del="'+s.code+'">Suppr.</button>'+
       '</td>';
     tb.appendChild(tr);
   });
-  $("sessEmpty").textContent = SESSIONS.length ? "" : "Aucune session pour l'instant. Génère une première clé ci-dessus.";
+  $("sessEmpty").textContent = SESSIONS.length ? "" : "Aucun examen pour l'instant. Crée-en un ci-dessus.";
   $("stats").innerHTML =
-    '<div class="stat"><b>'+SESSIONS.length+'</b><span>sessions</span></div>'+
-    '<div class="stat"><b style="color:#16904E">'+nAct+'</b><span>actives</span></div>'+
-    '<div class="stat"><b>'+nCopies+'</b><span>copies ouvertes</span></div>'+
+    '<div class="stat"><b>'+SESSIONS.length+'</b><span>examens</span></div>'+
+    '<div class="stat"><b style="color:#16904E">'+nAct+'</b><span>actifs</span></div>'+
+    '<div class="stat"><b>'+nPart+'</b><span>participants</span></div>'+
     '<div class="stat"><b style="color:#FA6706">'+nFini+'</b><span>copies terminées</span></div>';
-
-  tb.querySelectorAll("[data-res]").forEach(b=>b.onclick=()=>voirResultats(b.getAttribute("data-res")));
-  tb.querySelectorAll("[data-link]").forEach(b=>b.onclick=()=>{ copy(lienPour(b.getAttribute("data-link")), b); });
+  tb.querySelectorAll("[data-res]").forEach(b=>b.onclick=()=>voirParticipants(b.getAttribute("data-res")));
   tb.querySelectorAll("[data-toggle]").forEach(b=>b.onclick=async()=>{
-    const code=b.getAttribute("data-toggle"); const s=SESSIONS.find(x=>x.code===code);
-    const res=await api({action:"update_session", code, statut: s.statut==="actif"?"ferme":"actif"});
+    const code=b.getAttribute("data-toggle"), s=SESSIONS.find(x=>x.code===code);
+    const res=await api({action:"update_session", code, statut:s.statut==="actif"?"ferme":"actif"});
     if(res.ok) refresh(); else alert("Erreur : "+res.raison);
   });
   tb.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{
     const code=b.getAttribute("data-del");
-    if(!confirm("Supprimer la session "+code+" ET toutes ses copies ? Action irréversible.")) return;
+    if(!confirm("Supprimer cet examen ET tous ses participants ? Action irréversible.")) return;
     const res=await api({action:"delete_session", code});
     if(res.ok){ refresh(); $("resPanel").classList.add("hidden"); $("resHint").classList.remove("hidden"); } else alert("Erreur : "+res.raison);
   });
 }
 
-/* ---------- Résultats d'une session ---------- */
-let RES_CODE="", RES_ROWS=[];
-async function voirResultats(code){
+/* ---------- Génération de codes : bascule nombre / noms ---------- */
+$("segNombre").onclick=()=>{ $("segNombre").classList.add("active"); $("segNoms").classList.remove("active"); $("boxNombre").classList.remove("hidden"); $("boxNoms").classList.add("hidden"); };
+$("segNoms").onclick=()=>{ $("segNoms").classList.add("active"); $("segNombre").classList.remove("active"); $("boxNoms").classList.remove("hidden"); $("boxNombre").classList.add("hidden"); };
+
+$("btnGenNombre").addEventListener("click", ()=>genCodes({ count: parseInt($("g_count").value,10)||0 }));
+$("btnGenNoms").addEventListener("click", ()=>{
+  const noms = $("g_noms").value.split("\n").map(x=>x.trim()).filter(Boolean);
+  if(!noms.length){ alert("Ajoute au moins un nom."); return; }
+  genCodes({ noms });
+});
+async function genCodes(extra){
+  const btnN=$("btnGenNombre"), btnL=$("btnGenNoms"); btnN.disabled=btnL.disabled=true;
+  const res = await api(Object.assign({ action:"generate_codes", session_code:RES_CODE }, extra));
+  btnN.disabled=btnL.disabled=false;
+  if(!res.ok){ alert("Erreur : "+(res.raison||"inconnue")); return; }
+  const rows = res.data||[];
+  $("genOut").classList.remove("hidden");
+  $("genMsg").textContent = rows.length+" code(s) généré(s). Envoie à chaque candidat le lien correspondant :";
+  $("genLinks").value = rows.map(r=>(r.nom? (r.nom+" : ") : "")+lienPour(r.code_perso)).join("\n");
+  chargerParticipants();
+}
+$("btnCopyLinks").addEventListener("click", ()=>copy($("genLinks").value, $("btnCopyLinks")));
+
+/* ---------- Participants d'un examen ---------- */
+async function voirParticipants(code){
   RES_CODE = code;
   const s = SESSIONS.find(x=>x.code===code);
   $("resHint").classList.add("hidden"); $("resPanel").classList.remove("hidden");
-  $("resTitle").innerHTML = 'Session <span class="code-badge">'+code+'</span> — '+esc(s?s.titre:"");
+  $("genOut").classList.add("hidden");
+  $("resTitle").innerHTML = 'Examen : '+esc(s?s.titre:"")+' &nbsp; <span class="code-badge">'+code+'</span>';
   $("resCard").scrollIntoView({behavior:"smooth"});
-  await chargerCopies();
+  await chargerParticipants();
 }
-$("btnResRefresh").addEventListener("click", chargerCopies);
-async function chargerCopies(){
-  const res = await api({ action:"list_copies", code:RES_CODE });
+$("btnResRefresh").addEventListener("click", chargerParticipants);
+async function chargerParticipants(){
+  const res = await api({ action:"list_copies", session_code:RES_CODE });
   if(!res.ok){ alert("Erreur : "+res.raison); return; }
   RES_ROWS = res.data||[];
-  const tb = $("resRows"); tb.innerHTML="";
+  const tb=$("resRows"); tb.innerHTML="";
   let fini=0, somme=0;
   RES_ROWS.forEach(c=>{
-    const done = c.statut==="termine";
-    if(done){ fini++; somme += (c.pct||0); }
-    const stat = done ? '<span class="pill ok">terminé</span>' : '<span class="pill soon">en cours</span>';
+    const done=c.statut==="termine"; if(done){ fini++; somme+=(c.pct||0); }
+    const stat = done?'<span class="pill ok">terminé</span>':(c.statut==="en_cours"?'<span class="pill soon">en cours</span>':'<span class="pill grey">pas commencé</span>');
     const tr=document.createElement("tr");
     tr.innerHTML =
-      '<td><b>'+esc(c.nom)+'</b></td><td>'+esc(c.prenom)+'</td><td>'+esc(c.structure||"")+'</td>'+
+      '<td><span class="code-badge">'+c.code_perso+'</span></td>'+
+      '<td><b>'+esc(c.nom||"—")+'</b></td><td>'+esc(c.prenom||"")+'</td><td>'+esc(c.structure||"")+'</td>'+
       '<td>'+(done?(c.score+" / "+c.total):"—")+'</td>'+
       '<td>'+(done?(c.pct+" %"):"—")+'</td>'+
       '<td>'+stat+'</td>'+
       '<td>'+(c.termine_le?fmt(c.termine_le):"—")+'</td>'+
-      '<td><button class="act red" data-delc="'+c.id+'">Suppr.</button></td>';
+      '<td>'+
+        '<button class="act" data-lien="'+c.code_perso+'">Lien</button>'+
+        '<button class="act" data-reset="'+c.id+'">Réinit.</button>'+
+        '<button class="act red" data-delc="'+c.id+'">Suppr.</button>'+
+      '</td>';
     tb.appendChild(tr);
   });
-  $("resEmpty").textContent = RES_ROWS.length ? "" : "Aucun candidat n'a encore composé cette session.";
-  const moy = fini ? Math.round(somme/fini) : 0;
+  $("resEmpty").textContent = RES_ROWS.length ? "" : "Aucun code pour l'instant. Génère des codes ci-dessus.";
+  const moy = fini?Math.round(somme/fini):0;
   $("resStats").innerHTML =
-    '<div class="stat"><b>'+RES_ROWS.length+'</b><span>candidats</span></div>'+
-    '<div class="stat"><b style="color:#16904E">'+fini+'</b><span>terminées</span></div>'+
-    '<div class="stat"><b>'+moy+' %</b><span>moyenne (terminées)</span></div>';
+    '<div class="stat"><b>'+RES_ROWS.length+'</b><span>codes</span></div>'+
+    '<div class="stat"><b style="color:#16904E">'+fini+'</b><span>terminés</span></div>'+
+    '<div class="stat"><b>'+moy+' %</b><span>moyenne (terminés)</span></div>';
+  tb.querySelectorAll("[data-lien]").forEach(b=>b.onclick=()=>copy(lienPour(b.getAttribute("data-lien")), b));
+  tb.querySelectorAll("[data-reset]").forEach(b=>b.onclick=async()=>{
+    if(!confirm("Réinitialiser ce code ? Le candidat pourra recomposer depuis zéro.")) return;
+    const res=await api({action:"reset_copie", id:b.getAttribute("data-reset")});
+    if(res.ok) chargerParticipants(); else alert("Erreur : "+res.raison);
+  });
   tb.querySelectorAll("[data-delc]").forEach(b=>b.onclick=async()=>{
-    if(!confirm("Supprimer cette copie ? (permet à la personne de repasser)")) return;
+    if(!confirm("Supprimer ce participant (et son code) ?")) return;
     const res=await api({action:"delete_copie", id:b.getAttribute("data-delc")});
-    if(res.ok) chargerCopies(); else alert("Erreur : "+res.raison);
+    if(res.ok) chargerParticipants(); else alert("Erreur : "+res.raison);
   });
 }
 
 /* ---------- Export CSV ---------- */
 $("btnExport").addEventListener("click", ()=>{
   if(!RES_ROWS.length){ alert("Aucune donnée à exporter."); return; }
-  const head = ["Nom","Prenom","Structure","Cle","Score","Total","Pourcentage","Statut","Termine_le"];
-  const lignes = RES_ROWS.map(c=>[
-    c.nom, c.prenom, c.structure||"", c.code,
-    c.statut==="termine"?c.score:"", c.statut==="termine"?c.total:"",
-    c.statut==="termine"?c.pct:"", c.statut,
-    c.termine_le?fmt(c.termine_le):""
-  ]);
-  const csv = [head].concat(lignes).map(r=>r.map(v=>{
-    v = String(v==null?"":v); return /[";\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
-  }).join(";")).join("\r\n");
-  const blob = new Blob(["﻿"+csv], {type:"text/csv;charset=utf-8"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "resultats_"+RES_CODE+".csv";
-  a.click();
+  const head=["Code","Nom","Prenom","Structure","Lien","Statut","Score","Total","Pourcentage","Termine_le"];
+  const lignes=RES_ROWS.map(c=>[
+    c.code_perso, c.nom||"", c.prenom||"", c.structure||"", lienPour(c.code_perso), c.statut,
+    c.statut==="termine"?c.score:"", c.statut==="termine"?c.total:"", c.statut==="termine"?c.pct:"",
+    c.termine_le?fmt(c.termine_le):"" ]);
+  const csv=[head].concat(lignes).map(r=>r.map(v=>{ v=String(v==null?"":v); return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(";")).join("\r\n");
+  const blob=new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="participants_"+RES_CODE+".csv"; a.click();
 });
-
-/* util */
-function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function fmt(iso){ try{ const d=new Date(iso); return d.toLocaleDateString('fr-FR')+" "+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
 </script>
 </body></html>
