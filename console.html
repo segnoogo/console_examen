@@ -125,6 +125,28 @@ tbody tr:hover{background:#f8fafc}
   .scrim{display:block;position:fixed;inset:0;background:rgba(15,28,63,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:35}
   body.nav-open .scrim{opacity:1;pointer-events:auto}
 }
+
+/* Fenêtre de détail des réponses */
+.modal{position:fixed;inset:0;background:rgba(15,28,63,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:60}
+.modal-box{background:#fff;border-radius:16px;max-width:820px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(0,0,0,.4)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal-head b{color:var(--navy);font-size:15px}
+.modal-close{cursor:pointer;font-size:18px;color:var(--muted);padding:2px 9px;border-radius:6px}
+.modal-close:hover{background:#f1f5fb;color:var(--navy)}
+.dm-meta{padding:12px 20px;color:var(--muted);font-size:13px;border-bottom:1px solid var(--line-soft);display:flex;gap:16px;flex-wrap:wrap}
+.dm-tents{padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap}
+.tent-tab{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:6px 12px;font-size:12.5px;cursor:pointer;font-weight:600}
+.tent-tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.dm-body{padding:14px 20px 22px;overflow:auto}
+.dm-sec{font-size:13px;font-weight:700;color:var(--navy);margin:16px 0 8px;padding-bottom:5px;border-bottom:2px solid var(--line)}
+.dm-q{border:1px solid var(--line);border-left:4px solid #cbd5e1;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.dm-q.ok{border-left-color:var(--ok);background:#f6fbf8}.dm-q.ko{border-left-color:var(--bad);background:#fdf7f6}
+.dm-qh{font-weight:600;color:var(--ink);font-size:14px;margin-bottom:8px}
+.dm-badge{display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;color:#fff;font-size:12px;margin-right:6px}
+.dm-badge.ok{background:var(--ok)}.dm-badge.ko{background:var(--bad)}
+.dm-code{font-family:Consolas,monospace;font-size:12.5px;background:#0f1c31;color:#ffd97a;padding:8px 12px;border-radius:8px;margin:6px 0;white-space:pre-wrap;overflow-x:auto}
+.dm-line{font-size:13.5px;margin:3px 0}.dm-lbl{color:var(--muted);font-weight:600}
+.dm-exp{font-size:13px;color:#3d4a5c;background:#f3f6fb;border-radius:8px;padding:8px 12px;margin-top:8px}
 </style></head><body>
 
 <!-- ===== CONNEXION ===== -->
@@ -255,7 +277,7 @@ tbody tr:hover{background:#f8fafc}
               <button class="btn" id="btnExport" style="margin-left:auto">Exporter CSV</button>
               <button class="btn" id="btnResRefresh">Actualiser</button></div>
             <div class="stats" id="resStats" style="margin-bottom:14px"></div>
-            <div class="tablewrap"><table><thead><tr><th>Code</th><th>Nom</th><th>Prénom</th><th>Structure</th><th>Score</th><th>%</th><th>Statut</th><th>Terminé le</th><th>Actions</th></tr></thead><tbody id="resRows"></tbody></table></div>
+            <div class="tablewrap"><table><thead><tr><th>Code</th><th>Nom</th><th>Prénom</th><th>Structure</th><th>Score</th><th>%</th><th>Réussi</th><th>Tent.</th><th>Statut</th><th>Terminé le</th><th>Actions</th></tr></thead><tbody id="resRows"></tbody></table></div>
             <small id="resEmpty"></small>
           </div>
         </div>
@@ -264,6 +286,16 @@ tbody tr:hover{background:#f8fafc}
     </div>
   </div>
 </div></div>
+
+<!-- Détail des réponses d'un candidat -->
+<div id="detailModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-head"><b id="dm_title">—</b><span class="modal-close" id="dm_close">✕</span></div>
+    <div class="dm-meta" id="dm_meta"></div>
+    <div class="dm-tents" id="dm_tents"></div>
+    <div class="dm-body" id="dm_body"></div>
+  </div>
+</div>
 
 <script>
 /* ============================================================
@@ -424,9 +456,12 @@ async function chargerParticipants(){
     const done=c.statut==="termine"; if(done){fini++;somme+=(c.pct||0);} if(c.statut==="en_cours")enc++;
     const st=done?'<span class="pill ok">terminé</span>':(c.statut==="en_cours"?'<span class="pill soon">en cours</span>':'<span class="pill grey">pas commencé</span>');
     const tr=document.createElement("tr");
+    const reussiBadge = c.reussi ? '<span class="pill ok">✓ Réussi</span>' : (done?'<span class="pill grey">non</span>':'—');
     tr.innerHTML='<td><span class="code-badge">'+c.code_perso+'</span></td><td><b>'+esc(c.nom||"—")+'</b></td><td>'+esc(c.prenom||"")+'</td><td>'+esc(c.structure||"")+'</td>'+
-      '<td>'+(done?(c.score+" / "+c.total):"—")+'</td><td>'+(done?(c.pct+" %"):"—")+'</td><td>'+st+'</td><td>'+(c.termine_le?fmt(c.termine_le):"—")+'</td>'+
-      '<td><button class="iconbtn" data-lien="'+c.code_perso+'" title="Copier le lien">🔗</button>'+
+      '<td>'+(done?(c.score+" / "+c.total):"—")+'</td><td>'+(done?(c.pct+" %"):"—")+'</td>'+
+      '<td>'+reussiBadge+'</td><td>'+(c.nb_tentatives||0)+'</td><td>'+st+'</td><td>'+(c.termine_le?fmt(c.termine_le):"—")+'</td>'+
+      '<td><button class="iconbtn" data-detail="'+c.id+'" title="Voir le détail des réponses">📄</button>'+
+      '<button class="iconbtn" data-lien="'+c.code_perso+'" title="Copier le lien">🔗</button>'+
       '<button class="iconbtn" data-reset="'+c.id+'" title="Réinitialiser">↺</button>'+
       '<button class="iconbtn danger" data-delc="'+c.id+'" title="Supprimer">🗑</button></td>';
     tb.appendChild(tr);
@@ -435,10 +470,47 @@ async function chargerParticipants(){
   $("resEmpty").textContent = RES_ROWS.length?"":"Aucun code. Génère-en ci-dessus.";
   const moy=fini?Math.round(somme/fini):0;
   $("resStats").innerHTML = stat("Codes",RES_ROWS.length,"🎫","t-navy")+stat("En cours",enc,"⏱","t-orange")+stat("Terminés",fini,"✔","t-ok")+stat("Moyenne",moy+" %","📊","t-warn");
+  tb.querySelectorAll("[data-detail]").forEach(b=>b.onclick=()=>openDetail(b.getAttribute("data-detail")));
   tb.querySelectorAll("[data-lien]").forEach(b=>b.onclick=()=>copy(lienPour(b.getAttribute("data-lien")),b));
   tb.querySelectorAll("[data-reset]").forEach(b=>b.onclick=async()=>{ if(!confirm("Réinitialiser ce code ? Le candidat pourra recomposer.")) return; const r=await api({action:"reset_copie",id:b.getAttribute("data-reset")}); if(r.ok) chargerParticipants(); else alert("Erreur : "+r.raison); });
   tb.querySelectorAll("[data-delc]").forEach(b=>b.onclick=async()=>{ if(!confirm("Supprimer ce participant et son code ?")) return; const r=await api({action:"delete_copie",id:b.getAttribute("data-delc")}); if(r.ok) chargerParticipants(); else alert("Erreur : "+r.raison); });
 }
+
+/* ---------- Détail des réponses d'un candidat ---------- */
+let DM=null;
+async function openDetail(id){
+  const res=await api({action:"copie_detail", id});
+  if(!res.ok){ alert("Erreur : "+res.raison); return; }
+  DM=res.data; renderDetail(); $("detailModal").classList.remove("hidden");
+}
+function renderDetail(){
+  const c=DM, tents=Array.isArray(c.tentatives)?c.tentatives:[];
+  $("dm_title").textContent = ((c.prenom?c.prenom+" ":"")+(c.nom||"—"))+" — "+c.code_perso;
+  $("dm_meta").innerHTML = (c.structure?'<span>'+esc(c.structure)+'</span>':'')+
+    '<span>'+(c.reussi?'<b style="color:var(--ok)">Réussi ✓</b>':'Non réussi')+'</span>'+
+    '<span>'+(c.nb_tentatives||0)+' tentative(s)</span>'+
+    (c.pct!=null&&c.score!=null?'<span>Dernier : <b>'+c.score+'/'+c.total+' ('+c.pct+'%)</b></span>':'');
+  $("dm_tents").innerHTML = tents.length ? tents.map((t,i)=>'<button class="tent-tab'+(i===tents.length-1?' active':'')+'" data-t="'+i+'">Tentative '+t.n+' · '+t.pct+'%'+(t.reussi?' ✓':'')+'</button>').join('') : '<span class="muted">Aucune tentative terminée pour ce candidat.</span>';
+  $("dm_tents").querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{ $("dm_tents").querySelectorAll(".tent-tab").forEach(x=>x.classList.remove("active")); b.classList.add("active"); renderTent(+b.getAttribute("data-t")); });
+  renderTent(tents.length-1);
+}
+function renderTent(i){
+  const tents=Array.isArray(DM.tentatives)?DM.tentatives:[]; const t=tents[i];
+  if(!t){ $("dm_body").innerHTML='<p class="muted">Ce candidat n\'a pas encore composé.</p>'; return; }
+  const corr=t.correction||[]; let html='',lastSec=null;
+  corr.forEach(q=>{
+    if(q.secNum!==lastSec){ lastSec=q.secNum; html+='<div class="dm-sec">Section '+q.secNum+' — '+esc(q.secTitle)+'</div>'; }
+    const givenTxt=(q.given==null||q.given<0)?'<i>Sans réponse</i>':esc(q.options[q.given]);
+    html+='<div class="dm-q '+(q.ok?'ok':'ko')+'"><div class="dm-qh"><span class="dm-badge '+(q.ok?'ok':'ko')+'">'+(q.ok?'✓':'✕')+'</span>'+esc(q.q)+'</div>'+
+      (q.code?'<div class="dm-code">'+esc(q.code)+'</div>':'')+
+      '<div class="dm-line"><span class="dm-lbl">Réponse du candidat :</span> '+givenTxt+'</div>'+
+      (q.ok?'':'<div class="dm-line"><span class="dm-lbl">Bonne réponse :</span> <b>'+esc(q.options[q.correct])+'</b></div>')+
+      (q.explication?'<div class="dm-exp">'+esc(q.explication)+'</div>':'')+'</div>';
+  });
+  $("dm_body").innerHTML = html || '<p class="muted">Pas de détail disponible.</p>';
+}
+$("dm_close").onclick=()=>$("detailModal").classList.add("hidden");
+$("detailModal").onclick=(e)=>{ if(e.target.id==="detailModal") $("detailModal").classList.add("hidden"); };
 
 /* ---------- Export CSV ---------- */
 $("btnExport").onclick=()=>{
