@@ -1,64 +1,158 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BURK-CO — Console des examens (PRIVÉ)</title>
+<title>BURK-CO — Console des examens</title>
 <style>
+:root{
+  --navy:#172554; --navy-2:#0f1c3f; --blue:#224289; --blue-soft:#3b5bb5;
+  --orange:#FA6706; --orange-soft:#ff8a3d;
+  --bg:#eef2f8; --surface:#fff; --line:#e4e9f2; --line-soft:#eef2f8;
+  --ink:#1b2333; --muted:#64748b; --muted-2:#94a3b8;
+  --ok:#15824a; --ok-bg:#e7f5ee; --bad:#c0392b; --bad-bg:#fdecea; --warn:#b9740a; --warn-bg:#fff3e0;
+  --ring:rgba(34,66,137,.18);
+  --shadow-sm:0 1px 2px rgba(15,28,63,.06),0 1px 3px rgba(15,28,63,.04);
+  --shadow:0 6px 24px rgba(15,28,63,.08),0 1px 2px rgba(15,28,63,.05);
+  --radius:16px; --radius-sm:11px; --side-w:250px; --top-h:64px;
+}
 *{box-sizing:border-box}
-body{font-family:Calibri,"Segoe UI",system-ui,sans-serif;background:#0f1b3d;color:#1f2937;margin:0;padding:0}
-.wrap{max-width:1100px;margin:0 auto;padding:24px}
-h1{font-size:21px;color:#fff;margin:0 0 2px}.sub{color:#9fb0d6;font-size:13px;margin-bottom:16px}
-.card{background:#fff;border-radius:14px;padding:22px;margin-bottom:16px;box-shadow:0 10px 36px rgba(0,0,0,.25)}
-.warn{background:#fdeceb;color:#a3271b;border-left:4px solid #C0392B;padding:9px 12px;border-radius:8px;font-size:12.5px;margin-bottom:16px}
-.ok-note{background:#e7f4ee;color:#0f6b3c;border-left:4px solid #16904E;padding:9px 12px;border-radius:8px;font-size:12.5px;margin:10px 0}
-label{display:block;font-size:12px;color:#6b7280;margin:10px 0 4px;font-weight:600}
-input,select,textarea{width:100%;padding:9px 11px;border:1px solid #E5E7EB;border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
-input:focus,select:focus,textarea:focus{outline:2px solid #FA6706;outline-offset:1px;border-color:#FA6706}
-textarea{min-height:90px;resize:vertical;font-family:Consolas,monospace;font-size:12.5px}
-.row{display:flex;gap:12px;flex-wrap:wrap}.row>div{flex:1;min-width:150px}
-button{background:#FA6706;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;padding:10px 16px}
-button:hover{background:#e35d04}button.ghost{background:#fff;color:#172554;border:1px solid #172554}button.ghost:hover{background:#f0f3f8}
-button[disabled]{opacity:.5;cursor:not-allowed}
-.gen{width:100%;margin-top:16px;padding:12px}
-h2{font-size:16px;color:#172554;margin:0 0 4px}h3{font-size:14px;color:#172554;margin:14px 0 6px}
-.stats{display:flex;gap:10px;margin:10px 0 14px;flex-wrap:wrap}
-.stat{flex:1;min-width:110px;background:#F5F5F5;border-radius:10px;padding:10px 12px}.stat b{display:block;font-size:20px;color:#172554}.stat span{font-size:11.5px;color:#6b7280}
-table{width:100%;border-collapse:collapse;font-size:13px}th{background:#172554;color:#fff;text-align:left;padding:8px 10px;font-size:12px;position:sticky;top:0}
-td{padding:8px 10px;border-top:1px solid #eef0f3;vertical-align:middle}
-.pill{font-size:11px;font-weight:600;padding:2px 9px;border-radius:11px;white-space:nowrap}
-.ok{background:#e7f4ee;color:#0f6b3c}.soon{background:#fff3e0;color:#8a4b06}.exp{background:#fdeceb;color:#a3271b}.grey{background:#eef0f3;color:#555}
-.act{color:#224289;cursor:pointer;font-size:12px;margin-right:8px;font-weight:600;background:none;border:none;padding:0}.act:hover{text-decoration:underline}
-.act.red{color:#C0392B}
-.toolbar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:10px;flex-wrap:wrap}
-small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-weight:700;letter-spacing:.05em}
-.tablewrap{max-height:460px;overflow:auto;border:1px solid #eef0f3;border-radius:10px}
+body{font-family:"Segoe UI",Calibri,system-ui,-apple-system,sans-serif;margin:0;color:var(--ink);background:var(--bg);line-height:1.5}
+h2{font-size:15px;color:var(--navy);margin:0 0 16px;font-weight:700;display:flex;align-items:center;gap:9px}
+h2::before{content:"";width:4px;height:16px;border-radius:3px;background:linear-gradient(var(--orange),var(--orange-soft));flex:none}
+small{color:var(--muted)}
+.logo-svg{display:block;width:auto}
+
+/* Login */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(1000px 500px at 20% -10%,rgba(34,66,137,.12),transparent 60%),radial-gradient(800px 460px at 100% 0,rgba(250,103,6,.08),transparent 55%),var(--bg)}
+#connCard{max-width:430px;width:100%;padding:28px 30px 30px;border-radius:20px;box-shadow:var(--shadow);border:1px solid var(--line);position:relative;overflow:hidden;background:#fff}
+#connCard::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--navy),var(--blue),var(--orange))}
+#connCard .logo-svg{height:46px;margin:2px 0 14px}
+#connCard h2{font-size:18px;margin-bottom:6px}
+.hint{font-size:12.5px;color:var(--muted);margin:14px 0 0;line-height:1.6}
+.muted{color:var(--muted);font-size:13px}
+
+/* Shell / Sidebar */
+.shell{display:flex;min-height:100vh}
+.sidebar{width:var(--side-w);flex:none;background:linear-gradient(180deg,var(--navy),#14224e 55%,#101d40);color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:40}
+.side-brand{display:flex;flex-direction:column;gap:10px;padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.brand-plate{display:inline-block;background:#fff;border-radius:10px;padding:8px 12px;align-self:flex-start;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.brand-plate .logo-svg{height:30px}
+.sb-sub{font-size:11px;color:#adbce0;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.side-nav{padding:14px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.nav-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:10px;color:#c7d3ee;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s,color .15s;user-select:none}
+.nav-item .ic{width:20px;text-align:center;font-size:15px}
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav-item.active{background:linear-gradient(135deg,var(--orange),var(--orange-soft));color:#fff;box-shadow:0 4px 12px rgba(250,103,6,.35)}
+.side-foot{padding:14px;border-top:1px solid rgba(255,255,255,.08)}
+.side-user{display:flex;align-items:center;gap:10px}
+.ava-mini{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:13px}
+.su-txt b{display:block;font-size:13px}.su-txt small{color:#adbce0;font-size:11px}
+
+/* Main / Topbar */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:30;height:var(--top-h);background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:0 22px}
+.burger{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--navy);padding:4px 8px;border-radius:8px}
+.viewttl{font-size:17px;font-weight:700;color:var(--navy);margin:0;white-space:nowrap}
+.badge{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.3px;background:rgba(250,103,6,.12);color:#c85a00;border:1px solid rgba(250,103,6,.4);padding:5px 12px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--orange)}
+.disc{font-size:12.5px;color:var(--muted);cursor:pointer;font-weight:600;padding:6px 12px;border-radius:8px;border:1px solid var(--line)}
+.disc:hover{background:#f1f5fb;color:var(--navy)}
+.content{padding:24px 26px;width:100%;max-width:1200px}
+.view[hidden]{display:none}
+
+/* Cards / forms / buttons */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow-sm);margin-bottom:20px}
+label{display:block;font-size:11.5px;font-weight:700;color:var(--blue);margin:12px 0 6px}
+input,select,textarea{width:100%;padding:10px 13px;border:1px solid var(--line);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s}
+textarea{min-height:96px;resize:vertical;font-family:Consolas,monospace;font-size:13px}
+input:hover,select:hover{border-color:#cdd7e8}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-soft);box-shadow:0 0 0 4px var(--ring)}
+.row{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px}
+@media(max-width:620px){.formgrid{grid-template-columns:1fr}}
+.btn{border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:var(--radius-sm);padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s,border-color .15s,transform .05s;white-space:nowrap}
+.btn:hover{background:#f4f7fc;border-color:#cdd7e8}.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(23,37,84,.25)}
+.btn.primary:hover{background:linear-gradient(135deg,var(--navy-2),#1c326b)}
+.btn.mini{padding:6px 11px;font-size:12px;border-radius:8px}
+.btn.danger{color:var(--bad);border-color:#f1cdc8;background:#fff}.btn.danger:hover{background:var(--bad-bg)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.hint{font-size:12.5px;color:var(--muted)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow-sm);transition:transform .12s,box-shadow .12s}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.stat .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.stat .l{font-size:13px;color:var(--muted);font-weight:500}
+.stat .ic{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex:none;font-size:18px}
+.stat .ic.t-navy{background:#eef1fb;color:var(--navy)}.stat .ic.t-ok{background:var(--ok-bg);color:var(--ok)}
+.stat .ic.t-warn{background:var(--warn-bg);color:var(--warn)}.stat .ic.t-orange{background:rgba(250,103,6,.12);color:#c85a00}
+.stat .v{font-size:28px;font-weight:800;color:var(--navy);margin-top:8px;line-height:1}
+
+/* Bar chart */
+.barchart{display:flex;flex-direction:column;gap:11px}
+.bar-row{display:grid;grid-template-columns:200px 1fr 74px;align-items:center;gap:12px}
+.bar-row .bl{font-weight:600;color:var(--navy);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:12px;border-radius:999px;background:#eef2f8;overflow:hidden}
+.bar-fill{height:100%;border-radius:999px;min-width:3px;background:linear-gradient(90deg,var(--blue-soft),var(--blue));transition:width .5s}
+.bar-val{font-size:12px;font-weight:700;color:var(--muted);text-align:right;white-space:nowrap}
+@media(max-width:560px){.bar-row{grid-template-columns:110px 1fr 60px;gap:9px}}
+
+/* Table */
+.tbar{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.tbar h2{margin:0}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius-sm);max-height:520px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{text-align:left;padding:11px 12px;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid var(--line);position:sticky;top:0;background:#fff}
+tbody td{padding:11px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+tbody tr:hover{background:#f8fafc}
+.pill{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.soon{background:var(--warn-bg);color:var(--warn)}.pill.grey{background:#eef1f6;color:#64748b}
 .code-badge{background:#0f1c31;color:#ffd97a;font-family:Consolas,monospace;font-weight:700;padding:2px 8px;border-radius:6px;font-size:12.5px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.iconbtn{width:30px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;color:var(--navy);border-radius:8px;font-size:14px;cursor:pointer;margin-right:4px}
+.iconbtn:hover{background:#f1f5fb}.iconbtn.danger{color:var(--bad);border-color:#f1cdc8}
+.ok-note{background:var(--ok-bg);color:var(--ok);border-left:4px solid var(--ok);padding:11px 14px;border-radius:9px;font-size:13px;margin:14px 0}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{background:#fff;color:var(--navy);border:none;border-radius:0;padding:8px 14px;font-size:13px;cursor:pointer}
+.seg button.active{background:var(--navy);color:#fff}
+.subtle{background:#f8fafc;border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:16px}
 .hidden{display:none!important}
-.seg{display:inline-flex;border:1px solid #E5E7EB;border-radius:9px;overflow:hidden;margin-bottom:8px}
-.seg button{background:#fff;color:#172554;border:none;border-radius:0;padding:8px 14px;font-size:13px}
-.seg button.active{background:#172554;color:#fff}
-/* logo + auth */
-.badge{display:inline-block;background:linear-gradient(135deg,#FA6706,#ff9a44);color:#fff;font-weight:800;letter-spacing:.16em;font-size:1.05rem;padding:9px 20px;border-radius:11px;box-shadow:0 6px 18px rgba(250,103,6,.4)}
-.logo-plate{display:inline-block;background:#fff;border-radius:12px;padding:10px 15px;box-shadow:0 10px 24px rgba(0,0,0,.3)}
-.logo-svg{display:block;height:46px;width:auto}
-.apphead{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.apphead .logo-plate{padding:7px 12px}.apphead .logo-svg{height:34px}
-.auth{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:26px 18px;
-  background:radial-gradient(1100px 560px at 12% -10%,#25406b 0%,transparent 60%),
-             radial-gradient(900px 640px at 112% 112%,#2b4a7d 0%,transparent 55%),
-             linear-gradient(135deg,#0d1b3d 0%,#0f1b3d 55%,#17306a 100%)}
-.auth-card{width:100%;max-width:460px;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5);animation:rise .5s ease}
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-.auth-top{background:linear-gradient(135deg,#12233f,#1d3557);padding:30px 34px 24px;border-bottom:4px solid #FA6706;text-align:center}
-.auth-top h1{color:#fff;font-weight:400;font-size:1.45rem;margin:16px 0 3px}
-.auth-top p{color:#c9d3e4;font-style:italic;font-size:.9rem}
-.auth-body{padding:24px 34px 30px}
-.msg{font-size:13px;margin-top:10px}
+
+@media(max-width:900px){
+  .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.4)}
+  body.nav-open .sidebar{transform:none}
+  .burger{display:inline-block}
+  .scrim{display:block;position:fixed;inset:0;background:rgba(15,28,63,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:35}
+  body.nav-open .scrim{opacity:1;pointer-events:auto}
+}
 </style></head><body>
 
-<!-- ====== CONNEXION ADMIN ====== -->
-<div id="authScreen" class="auth">
-  <div class="auth-card">
-    <div class="auth-top">
-      <div class="logo-plate">
+<!-- ===== CONNEXION ===== -->
+<div id="loginScreen">
+  <div id="connCard">
+    <svg class="logo-svg" viewBox="0 0 410 92" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BURK-CO">
+      <rect x="16" y="12" width="15" height="74" rx="4" fill="#2f2f2f"/>
+      <path d="M31 12 H54 a18 18 0 0 1 0 34 H31 Z" fill="#2f2f2f"/>
+      <path d="M31 50 H58 a19 19 0 0 1 0 36 H31 Z" fill="#2f2f2f"/>
+      <polyline points="20,82 38,58 52,66 76,30" fill="none" stroke="#12a0e0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M88 18 L82 36 L69 24 Z" fill="#12a0e0"/>
+      <text x="104" y="52" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="800" fill="#0f7fc0" letter-spacing="1">BURK-CO</text>
+      <text x="106" y="71" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" font-weight="600" fill="#2f6a92" letter-spacing="0.6">COMPÉTENCE · RIGUEUR · SATISFACTION</text>
+    </svg>
+    <h2>Console des examens</h2>
+    <label>Mot de passe administrateur</label>
+    <input id="cPass" type="password" placeholder="Saisis ton mot de passe admin">
+    <div class="row"><button id="connBtn" class="btn primary">Se connecter</button><span id="connMsg" class="muted"></span></div>
+    <p class="hint">🔒 La connexion passe par ta fonction sécurisée <b>gerer-examens</b>. Le mot de passe est mémorisé uniquement dans ce navigateur, sur ton PC.</p>
+  </div>
+</div>
+
+<!-- ===== APPLICATION ===== -->
+<div id="appArea" style="display:none"><div class="shell">
+  <div class="scrim" id="scrim"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="side-brand">
+      <span class="brand-plate">
         <svg class="logo-svg" viewBox="0 0 410 92" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BURK-CO">
           <rect x="16" y="12" width="15" height="74" rx="4" fill="#2f2f2f"/>
           <path d="M31 12 H54 a18 18 0 0 1 0 34 H31 Z" fill="#2f2f2f"/>
@@ -68,130 +162,108 @@ small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-w
           <text x="104" y="52" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="800" fill="#0f7fc0" letter-spacing="1">BURK-CO</text>
           <text x="106" y="71" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" font-weight="600" fill="#2f6a92" letter-spacing="0.6">COMPÉTENCE · RIGUEUR · SATISFACTION</text>
         </svg>
-      </div>
-      <h1>Console des examens</h1>
-      <p>Espace administrateur — accès réservé</p>
+      </span>
+      <span class="sb-sub">Console des examens</span>
     </div>
-    <div class="auth-body">
-      <div class="warn"><b>Confidentiel.</b> Cette page pilote tes examens. Ne la partage pas.</div>
-      <label>Mot de passe administrateur</label>
-      <input type="password" id="pw" placeholder="Mot de passe">
-      <button class="gen" id="btnConnect">Se connecter</button>
-      <div class="msg" id="loginMsg" style="color:#C0392B"></div>
-    </div>
-  </div>
-</div>
+    <nav class="side-nav">
+      <div class="nav-item active" data-view="dash"><span class="ic">▤</span><span>Tableau de bord</span></div>
+      <div class="nav-item" data-view="exams"><span class="ic">🗂</span><span>Examens</span></div>
+      <div class="nav-item" data-view="create"><span class="ic">＋</span><span>Nouvel examen</span></div>
+      <div class="nav-item" data-view="part"><span class="ic">👥</span><span>Participants &amp; codes</span></div>
+    </nav>
+    <div class="side-foot"><div class="side-user"><span class="ava-mini">A</span><div class="su-txt"><b>Admin</b><small>BURK-CO</small></div></div></div>
+  </aside>
 
-<!-- ====== APPLICATION ====== -->
-<div class="wrap hidden" id="app">
+  <div class="main">
+    <header class="topbar">
+      <button class="burger" id="burger">☰</button>
+      <h1 class="viewttl" id="viewTitle">Tableau de bord</h1>
+      <div class="badge">PRIVÉ</div>
+      <span class="disc" id="discLink" style="margin-left:12px">Se déconnecter</span>
+    </header>
 
-  <div class="apphead">
-    <div class="logo-plate">
-      <svg class="logo-svg" viewBox="0 0 410 92" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BURK-CO">
-        <rect x="16" y="12" width="15" height="74" rx="4" fill="#2f2f2f"/>
-        <path d="M31 12 H54 a18 18 0 0 1 0 34 H31 Z" fill="#2f2f2f"/>
-        <path d="M31 50 H58 a19 19 0 0 1 0 36 H31 Z" fill="#2f2f2f"/>
-        <polyline points="20,82 38,58 52,66 76,30" fill="none" stroke="#12a0e0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M88 18 L82 36 L69 24 Z" fill="#12a0e0"/>
-        <text x="104" y="52" font-family="Segoe UI,Arial,sans-serif" font-size="34" font-weight="800" fill="#0f7fc0" letter-spacing="1">BURK-CO</text>
-        <text x="106" y="71" font-family="Segoe UI,Arial,sans-serif" font-size="9.5" font-weight="600" fill="#2f6a92" letter-spacing="0.6">COMPÉTENCE · RIGUEUR · SATISFACTION</text>
-      </svg>
-    </div>
-    <div><h1>Console des examens</h1><div class="sub">Crée les examens, génère les codes personnels et reçois les résultats</div></div>
-  </div>
+    <div class="content">
 
-  <!-- Créer un examen -->
-  <div class="card">
-    <h2>1. Créer un examen</h2>
-    <small>Un examen = une configuration (durée, questions…). Ensuite tu génères un code personnel par candidat.</small>
-    <div class="grid2" style="margin-top:12px">
-      <div>
-        <label>Intitulé de l'examen</label>
-        <input id="c_titre" value="Examen final — Formation Power Query">
-        <label>Client / Organisation</label>
-        <input id="c_client" value="Coris Bank International Holding">
-        <label>Jeu de questions</label>
-        <select id="c_examen"><option value="power_query">Power Query (39 questions)</option></select>
-      </div>
-      <div>
-        <div class="row">
-          <div><label>Durée (minutes)</label><input id="c_duree" type="number" value="45" min="5"></div>
-          <div><label>Expire le (optionnel)</label><input id="c_exp" type="date"></div>
+      <!-- Tableau de bord -->
+      <section class="view" id="view-dash">
+        <div class="stats" id="stats"></div>
+        <div class="card"><h2>Participation par examen</h2><div id="chartPart" class="barchart"></div></div>
+      </section>
+
+      <!-- Nouvel examen -->
+      <section class="view" id="view-create" hidden>
+        <div class="card">
+          <h2>Créer un examen</h2>
+          <p class="hint" style="margin:-6px 0 6px">Un examen = une configuration. Ensuite, tu génères un code personnel par candidat dans « Participants & codes ».</p>
+          <div class="formgrid">
+            <div><label>Intitulé de l'examen</label><input id="c_titre" value="Examen final — Formation Power Query"></div>
+            <div><label>Client / Organisation</label><input id="c_client" value="Coris Bank International Holding"></div>
+            <div><label>Jeu de questions</label><select id="c_examen"><option value="power_query">Power Query (39 questions)</option></select></div>
+            <div><label>Durée (minutes)</label><input id="c_duree" type="number" value="45" min="5"></div>
+            <div><label>Ce que voit le candidat à la fin</label><select id="c_mode">
+              <option value="score" selected>Son score uniquement</option>
+              <option value="rien">Rien (juste une confirmation)</option>
+              <option value="correction">Score + correction détaillée</option></select></div>
+            <div><label>Mélanger questions &amp; options</label><select id="c_melange"><option value="1" selected>Oui (recommandé)</option><option value="0">Non</option></select></div>
+            <div><label>Expire le (optionnel)</label><input id="c_exp" type="date"></div>
+          </div>
+          <div class="row"><button id="btnCreate" class="btn primary">Créer l'examen</button></div>
         </div>
-        <label>Ce que voit le candidat à la fin</label>
-        <select id="c_mode">
-          <option value="score" selected>Son score uniquement</option>
-          <option value="rien">Rien (juste une confirmation)</option>
-          <option value="correction">Score + correction détaillée</option>
-        </select>
-        <label>Mélanger les questions et les options</label>
-        <select id="c_melange"><option value="1" selected>Oui (recommandé)</option><option value="0">Non</option></select>
-      </div>
-    </div>
-    <button class="gen" id="btnCreate">Créer l'examen</button>
-    <div id="createOut" class="ok-note hidden"></div>
-  </div>
+      </section>
 
-  <!-- Liste des examens -->
-  <div class="card">
-    <h2>2. Mes examens</h2>
-    <div class="stats" id="stats"></div>
-    <div class="toolbar"><button class="ghost" id="btnRefresh">Actualiser</button></div>
-    <div class="tablewrap">
-      <table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Statut</th><th>Participants</th><th>Actions</th></tr></thead>
-      <tbody id="sessRows"></tbody></table>
-    </div>
-    <small id="sessEmpty"></small>
-  </div>
-
-  <!-- Participants & codes -->
-  <div class="card" id="resCard">
-    <h2>3. Participants &amp; codes</h2>
-    <div id="resHint"><small>Clique sur « Gérer » d'un examen ci-dessus pour générer des codes et voir les résultats.</small></div>
-    <div id="resPanel" class="hidden">
-      <h3 id="resTitle"></h3>
-
-      <!-- Génération de codes -->
-      <div style="background:#f8fafc;border:1px solid #eef0f3;border-radius:10px;padding:14px 16px;margin-bottom:14px">
-        <b style="font-size:13.5px;color:#172554">Générer des codes personnels</b>
-        <div class="seg" style="margin-top:8px">
-          <button id="segNombre" class="active">Par nombre</button>
-          <button id="segNoms">Par liste de noms</button>
+      <!-- Examens -->
+      <section class="view" id="view-exams" hidden>
+        <div class="card">
+          <div class="tbar"><h2>Mes examens</h2><span class="muted" id="examCnt"></span>
+            <button class="btn primary" data-view="create" style="margin-left:auto">＋ Nouvel examen</button>
+            <button class="btn" id="btnRefresh">Actualiser</button></div>
+          <div class="tablewrap"><table><thead><tr><th>Examen</th><th>Durée</th><th>Résultat</th><th>Statut</th><th>Participants</th><th>Actions</th></tr></thead><tbody id="sessRows"></tbody></table></div>
+          <small id="sessEmpty"></small>
         </div>
-        <div id="boxNombre">
-          <label>Combien de codes ?</label>
-          <div class="row">
-            <div style="max-width:160px"><input id="g_count" type="number" value="10" min="1" max="500"></div>
-            <div style="flex:0 0 auto"><button id="btnGenNombre" style="margin-top:0">Générer</button></div>
+      </section>
+
+      <!-- Participants & codes -->
+      <section class="view" id="view-part" hidden>
+        <div id="partEmpty" class="card"><h2>Participants &amp; codes</h2><p class="muted">Va dans « Examens » et clique sur <b>Gérer</b> pour choisir un examen, générer des codes et voir les résultats.</p></div>
+        <div id="partPanel" class="hidden">
+          <div class="subtle" id="partHead"></div>
+          <div class="card">
+            <h2>Générer des codes personnels</h2>
+            <div class="seg" style="margin-bottom:10px">
+              <button id="segNombre" class="active">Par nombre</button>
+              <button id="segNoms">Par liste de noms</button>
+            </div>
+            <div id="boxNombre">
+              <label>Combien de codes ?</label>
+              <div class="row" style="margin-top:0"><div style="max-width:170px"><input id="g_count" type="number" value="10" min="1" max="500"></div>
+              <button id="btnGenNombre" class="btn primary">Générer</button></div>
+            </div>
+            <div id="boxNoms" class="hidden">
+              <label>Un nom par ligne (le code sera rattaché au nom)</label>
+              <textarea id="g_noms" placeholder="Awa Traoré&#10;Moussa Diallo&#10;Fatou Ndiaye"></textarea>
+              <div class="row"><button id="btnGenNoms" class="btn primary">Générer les codes</button></div>
+            </div>
+            <div id="genOut" class="hidden">
+              <div class="ok-note" id="genMsg"></div>
+              <label>Liens à envoyer (un par candidat)</label>
+              <textarea id="genLinks" readonly style="min-height:130px"></textarea>
+              <div class="row"><button class="btn" id="btnCopyLinks">Copier tous les liens</button></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="tbar"><h2>Participants</h2><span class="muted" id="partCnt"></span>
+              <button class="btn" id="btnExport" style="margin-left:auto">Exporter CSV</button>
+              <button class="btn" id="btnResRefresh">Actualiser</button></div>
+            <div class="stats" id="resStats" style="margin-bottom:14px"></div>
+            <div class="tablewrap"><table><thead><tr><th>Code</th><th>Nom</th><th>Prénom</th><th>Structure</th><th>Score</th><th>%</th><th>Statut</th><th>Terminé le</th><th>Actions</th></tr></thead><tbody id="resRows"></tbody></table></div>
+            <small id="resEmpty"></small>
           </div>
         </div>
-        <div id="boxNoms" class="hidden">
-          <label>Un nom par ligne (le code sera rattaché au nom)</label>
-          <textarea id="g_noms" placeholder="Awa Traoré&#10;Moussa Diallo&#10;Fatou Ndiaye"></textarea>
-          <button id="btnGenNoms" style="margin-top:8px">Générer les codes</button>
-        </div>
-        <div id="genOut" class="hidden" style="margin-top:12px">
-          <div class="ok-note" id="genMsg"></div>
-          <label>Liens à envoyer (un par candidat)</label>
-          <textarea id="genLinks" readonly style="min-height:120px"></textarea>
-          <button class="ghost" id="btnCopyLinks" style="margin-top:8px">Copier tous les liens</button>
-        </div>
-      </div>
+      </section>
 
-      <div class="stats" id="resStats"></div>
-      <div class="toolbar">
-        <button class="ghost" id="btnExport">Exporter en CSV (Excel)</button>
-        <button class="ghost" id="btnResRefresh">Actualiser</button>
-      </div>
-      <div class="tablewrap">
-        <table><thead><tr><th>Code</th><th>Nom</th><th>Prénom</th><th>Structure</th><th>Score</th><th>%</th><th>Statut</th><th>Terminé le</th><th>Actions</th></tr></thead>
-        <tbody id="resRows"></tbody></table>
-      </div>
-      <small id="resEmpty"></small>
     </div>
   </div>
-
-</div>
+</div></div>
 
 <script>
 /* ============================================================
@@ -199,194 +271,183 @@ small{color:#6b7280;font-size:11.5px}.mono{font-family:Consolas,monospace;font-w
 ============================================================ */
 const SUPABASE_URL = "https://dddrgmxkywjxxycfoiya.supabase.co";
 const ANON_KEY     = "sb_publishable_kCTukGId2HRQn7lqwZE-ug_DlCzCMiS";
-// Adresse publique de examen.html (là où tu l'héberges).
 const EXAM_URL     = "https://segnoogo.github.io/examen/examen.html";
 /* ============================================================ */
 
 const FN = SUPABASE_URL.replace(/\/$/,'') + "/functions/v1/gerer-examens";
+const STORE = "burkco_exam_pass";
 const $ = (id)=>document.getElementById(id);
-let PW = "", SESSIONS = [], RES_CODE = "", RES_ROWS = [];
+let PASS="", SESSIONS=[], RES_CODE="", RES_ROWS=[], creating=false;
+const TITLES = { dash:"Tableau de bord", exams:"Examens", create:"Nouvel examen", part:"Participants & codes" };
 
 async function api(payload){
   try{
-    const r = await fetch(FN, { method:"POST",
-      headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+ANON_KEY, "apikey":ANON_KEY },
-      body: JSON.stringify(Object.assign({ motdepasse:PW }, payload)) });
+    const r = await fetch(FN,{ method:"POST",
+      headers:{ "Content-Type":"application/json","Authorization":"Bearer "+ANON_KEY,"apikey":ANON_KEY },
+      body: JSON.stringify(Object.assign({ motdepasse:PASS }, payload)) });
     return await r.json();
-  }catch(e){ return { ok:false, raison:"Connexion impossible (vérifie SUPABASE_URL et Internet)." }; }
+  }catch(e){ return { ok:false, raison:"Connexion impossible (vérifie Internet)." }; }
 }
-function lienPour(code){
-  if(!EXAM_URL) return "⚠ Renseigne EXAM_URL dans le code — code : "+code;
-  const sep = EXAM_URL.indexOf("?")>=0 ? "&" : "?";
-  return EXAM_URL + sep + "code=" + code;
-}
+function lienPour(code){ if(!EXAM_URL) return "code : "+code; const s=EXAM_URL.indexOf("?")>=0?"&":"?"; return EXAM_URL+s+"code="+code; }
 function copy(txt,btn){ navigator.clipboard.writeText(txt).then(()=>{ const t=btn.textContent; btn.textContent="Copié !"; setTimeout(()=>btn.textContent=t,1200); }); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function fmt(iso){ try{ const d=new Date(iso); return d.toLocaleDateString('fr-FR')+" "+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
 
-/* ---------- Connexion ---------- */
-$("btnConnect").addEventListener("click", async ()=>{
-  PW = $("pw").value;
-  $("loginMsg").textContent = "Connexion…";
+/* ---------- Connexion (mémorisée -> survit au F5) ---------- */
+$("connBtn").onclick = ()=>connect();
+$("cPass").addEventListener("keydown",e=>{ if(e.key==="Enter") connect(); });
+async function connect(){
+  PASS = $("cPass").value;
+  $("connMsg").textContent="Connexion…";
   const res = await api({ action:"list_sessions" });
-  if(!res.ok){ $("loginMsg").textContent = res.raison==="motdepasse" ? "Mot de passe incorrect." : ("Erreur : "+(res.raison||"inconnue")); return; }
-  $("loginMsg").textContent="";
-  $("authScreen").classList.add("hidden"); $("app").classList.remove("hidden");
-  renderSessions(res.data);
+  if(!res.ok){ $("connMsg").textContent = res.raison==="motdepasse" ? "Mot de passe incorrect." : ("Erreur : "+(res.raison||"inconnue")); return; }
+  try{ localStorage.setItem(STORE, PASS); }catch(e){}
+  $("connMsg").textContent="";
+  $("loginScreen").style.display="none"; $("appArea").style.display="block";
+  SESSIONS = res.data||[]; renderDash(); renderExams();
+}
+$("discLink").onclick = ()=>{ try{ localStorage.removeItem(STORE); }catch(e){} PASS=""; location.reload(); };
+/* reconnexion auto au chargement */
+(function(){ try{ const p=localStorage.getItem(STORE); if(p){ $("cPass").value=p; connect(); } }catch(e){} })();
+
+/* ---------- Navigation ---------- */
+document.querySelectorAll('.nav-item[data-view],[data-view]').forEach(n=>{
+  if(n.classList.contains('nav-item') || n.tagName==='BUTTON') n.addEventListener('click',()=>showView(n.getAttribute('data-view')));
 });
-$("pw").addEventListener("keydown",e=>{ if(e.key==="Enter") $("btnConnect").click(); });
+$("burger").onclick=()=>document.body.classList.toggle('nav-open');
+$("scrim").onclick=()=>document.body.classList.remove('nav-open');
+function showView(v){
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.toggle('active', x.getAttribute('data-view')===v));
+  document.querySelectorAll('.view').forEach(x=>x.hidden = (x.id!=='view-'+v));
+  $("viewTitle").textContent = TITLES[v]||"";
+  document.body.classList.remove('nav-open');
+  if(v==='dash'){ renderDash(); }
+  if(v==='exams'){ refresh(); }
+  window.scrollTo(0,0);
+}
 
-/* ---------- Créer un examen ---------- */
-$("btnCreate").addEventListener("click", async ()=>{
-  const payload = { action:"create_session",
-    titre:$("c_titre").value.trim()||"Examen", client:$("c_client").value.trim()||null,
-    examen:$("c_examen").value, duree_min:parseInt($("c_duree").value,10)||45,
-    mode_resultat:$("c_mode").value, melange:$("c_melange").value==="1", expire_le:$("c_exp").value||null };
-  $("btnCreate").disabled=true; $("btnCreate").textContent="Création…";
-  const res = await api(payload);
-  $("btnCreate").disabled=false; $("btnCreate").textContent="Créer l'examen";
-  if(!res.ok){ alert("Erreur : "+(res.raison||"inconnue")); return; }
-  $("createOut").classList.remove("hidden");
-  $("createOut").innerHTML = 'Examen créé. Il apparaît dans la liste ci-dessous — clique sur <b>« Gérer »</b> pour générer les codes des candidats.';
-  await refresh();
-  voirParticipants(res.data.code);
-});
+/* ---------- Données ---------- */
+async function refresh(){ const res=await api({action:"list_sessions"}); if(res.ok){ SESSIONS=res.data||[]; renderDash(); renderExams(); } }
 
-/* ---------- Liste des examens ---------- */
-$("btnRefresh").addEventListener("click", refresh);
-async function refresh(){ const res = await api({ action:"list_sessions" }); if(res.ok) renderSessions(res.data); }
+function renderDash(){
+  let nAct=0,nPart=0,nFini=0;
+  SESSIONS.forEach(s=>{ if(s.statut==="actif")nAct++; nPart+=s.participants||0; nFini+=s.termines||0; });
+  $("stats").innerHTML =
+    stat("Examens", SESSIONS.length, "🗂","t-navy")+
+    stat("Actifs", nAct, "✓","t-ok")+
+    stat("Participants", nPart, "👥","t-orange")+
+    stat("Copies terminées", nFini, "✔","t-warn");
+  const withP = SESSIONS.filter(s=>(s.participants||0)>0);
+  $("chartPart").innerHTML = withP.length ? withP.map(s=>{
+    const p=s.participants||0, f=s.termines||0, pct=p?Math.round(f/p*100):0;
+    return '<div class="bar-row"><div class="bl" title="'+esc(s.titre)+'">'+esc(s.titre)+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="bar-val">'+f+'/'+p+'</div></div>';
+  }).join('') : '<p class="muted">Aucun participant pour l\'instant. Crée un examen puis génère des codes.</p>';
+}
+function stat(l,v,ic,t){ return '<div class="stat"><div class="top"><span class="l">'+l+'</span><span class="ic '+t+'">'+ic+'</span></div><div class="v">'+v+'</div></div>'; }
 
-function renderSessions(list){
-  SESSIONS = list||[];
-  const tb = $("sessRows"); tb.innerHTML="";
-  let nAct=0, nPart=0, nFini=0;
+function renderExams(){
+  const tb=$("sessRows"); tb.innerHTML="";
   SESSIONS.forEach(s=>{
-    if(s.statut==="actif") nAct++;
-    nPart += s.participants||0; nFini += s.termines||0;
-    const modeLbl = {score:"Score",rien:"Rien",correction:"Correction"}[s.mode_resultat]||s.mode_resultat;
-    const stat = s.statut==="actif" ? '<span class="pill ok">actif</span>' : '<span class="pill grey">fermé</span>';
+    const modeLbl={score:"Score",rien:"Rien",correction:"Correction"}[s.mode_resultat]||s.mode_resultat;
+    const stat = s.statut==="actif"?'<span class="pill ok">actif</span>':'<span class="pill grey">fermé</span>';
     const tr=document.createElement("tr");
-    tr.innerHTML =
-      '<td>'+esc(s.titre||"")+'<br><small>'+esc(s.client||"")+'</small></td>'+
-      '<td>'+(s.duree_min||45)+' min</td>'+
-      '<td>'+modeLbl+'</td>'+
-      '<td>'+stat+'</td>'+
+    tr.innerHTML='<td><b>'+esc(s.titre||"")+'</b><br><small>'+esc(s.client||"")+'</small></td>'+
+      '<td>'+(s.duree_min||45)+' min</td><td>'+modeLbl+'</td><td>'+stat+'</td>'+
       '<td><b>'+(s.termines||0)+'</b> / '+(s.participants||0)+'</td>'+
-      '<td>'+
-        '<button class="act" data-res="'+s.code+'">Gérer</button>'+
-        '<button class="act" data-toggle="'+s.code+'">'+(s.statut==="actif"?"Fermer":"Rouvrir")+'</button>'+
-        '<button class="act red" data-del="'+s.code+'">Suppr.</button>'+
-      '</td>';
+      '<td><button class="btn mini primary" data-res="'+s.code+'">Gérer</button> '+
+      '<button class="btn mini" data-toggle="'+s.code+'">'+(s.statut==="actif"?"Fermer":"Rouvrir")+'</button> '+
+      '<button class="iconbtn danger" data-del="'+s.code+'" title="Supprimer">🗑</button></td>';
     tb.appendChild(tr);
   });
-  $("sessEmpty").textContent = SESSIONS.length ? "" : "Aucun examen pour l'instant. Crée-en un ci-dessus.";
-  $("stats").innerHTML =
-    '<div class="stat"><b>'+SESSIONS.length+'</b><span>examens</span></div>'+
-    '<div class="stat"><b style="color:#16904E">'+nAct+'</b><span>actifs</span></div>'+
-    '<div class="stat"><b>'+nPart+'</b><span>participants</span></div>'+
-    '<div class="stat"><b style="color:#FA6706">'+nFini+'</b><span>copies terminées</span></div>';
-  tb.querySelectorAll("[data-res]").forEach(b=>b.onclick=()=>voirParticipants(b.getAttribute("data-res")));
+  $("examCnt").textContent = SESSIONS.length ? (SESSIONS.length+" examen(s)") : "";
+  $("sessEmpty").textContent = SESSIONS.length ? "" : "Aucun examen. Crée-en un depuis « Nouvel examen ».";
+  tb.querySelectorAll("[data-res]").forEach(b=>b.onclick=()=>gerer(b.getAttribute("data-res")));
   tb.querySelectorAll("[data-toggle]").forEach(b=>b.onclick=async()=>{
-    const code=b.getAttribute("data-toggle"), s=SESSIONS.find(x=>x.code===code);
-    const res=await api({action:"update_session", code, statut:s.statut==="actif"?"ferme":"actif"});
-    if(res.ok) refresh(); else alert("Erreur : "+res.raison);
+    const code=b.getAttribute("data-toggle"),s=SESSIONS.find(x=>x.code===code);
+    const r=await api({action:"update_session",code,statut:s.statut==="actif"?"ferme":"actif"}); if(r.ok) refresh(); else alert("Erreur : "+r.raison);
   });
   tb.querySelectorAll("[data-del]").forEach(b=>b.onclick=async()=>{
-    const code=b.getAttribute("data-del");
-    if(!confirm("Supprimer cet examen ET tous ses participants ? Action irréversible.")) return;
-    const res=await api({action:"delete_session", code});
-    if(res.ok){ refresh(); $("resPanel").classList.add("hidden"); $("resHint").classList.remove("hidden"); } else alert("Erreur : "+res.raison);
+    if(!confirm("Supprimer cet examen ET tous ses participants ? Irréversible.")) return;
+    const r=await api({action:"delete_session",code:b.getAttribute("data-del")}); if(r.ok){ refresh(); showView('exams'); } else alert("Erreur : "+r.raison);
   });
 }
 
-/* ---------- Génération de codes : bascule nombre / noms ---------- */
-$("segNombre").onclick=()=>{ $("segNombre").classList.add("active"); $("segNoms").classList.remove("active"); $("boxNombre").classList.remove("hidden"); $("boxNoms").classList.add("hidden"); };
-$("segNoms").onclick=()=>{ $("segNoms").classList.add("active"); $("segNombre").classList.remove("active"); $("boxNoms").classList.remove("hidden"); $("boxNombre").classList.add("hidden"); };
-
-$("btnGenNombre").addEventListener("click", ()=>genCodes({ count: parseInt($("g_count").value,10)||0 }));
-$("btnGenNoms").addEventListener("click", ()=>{
-  const noms = $("g_noms").value.split("\n").map(x=>x.trim()).filter(Boolean);
-  if(!noms.length){ alert("Ajoute au moins un nom."); return; }
-  genCodes({ noms });
-});
-async function genCodes(extra){
-  const btnN=$("btnGenNombre"), btnL=$("btnGenNoms"); btnN.disabled=btnL.disabled=true;
-  const res = await api(Object.assign({ action:"generate_codes", session_code:RES_CODE }, extra));
-  btnN.disabled=btnL.disabled=false;
+/* ---------- Créer un examen (isolé -> pas de doublon) ---------- */
+$("btnCreate").onclick = async ()=>{
+  if(creating) return; creating=true;
+  $("btnCreate").disabled=true; $("btnCreate").textContent="Création…";
+  const res = await api({ action:"create_session",
+    titre:$("c_titre").value.trim()||"Examen", client:$("c_client").value.trim()||null, examen:$("c_examen").value,
+    duree_min:parseInt($("c_duree").value,10)||45, mode_resultat:$("c_mode").value, melange:$("c_melange").value==="1", expire_le:$("c_exp").value||null });
+  creating=false; $("btnCreate").disabled=false; $("btnCreate").textContent="Créer l'examen";
   if(!res.ok){ alert("Erreur : "+(res.raison||"inconnue")); return; }
-  const rows = res.data||[];
+  await refresh();
+  gerer(res.data.code);   // bascule direct vers la génération des codes
+};
+
+/* ---------- Générer des codes ---------- */
+$("segNombre").onclick=()=>{ $("segNombre").classList.add("active");$("segNoms").classList.remove("active");$("boxNombre").classList.remove("hidden");$("boxNoms").classList.add("hidden"); };
+$("segNoms").onclick=()=>{ $("segNoms").classList.add("active");$("segNombre").classList.remove("active");$("boxNoms").classList.remove("hidden");$("boxNombre").classList.add("hidden"); };
+$("btnGenNombre").onclick=()=>genCodes({ count:parseInt($("g_count").value,10)||0 });
+$("btnGenNoms").onclick=()=>{ const noms=$("g_noms").value.split("\n").map(x=>x.trim()).filter(Boolean); if(!noms.length){ alert("Ajoute au moins un nom."); return; } genCodes({ noms }); };
+async function genCodes(extra){
+  $("btnGenNombre").disabled=$("btnGenNoms").disabled=true;
+  const res=await api(Object.assign({action:"generate_codes",session_code:RES_CODE},extra));
+  $("btnGenNombre").disabled=$("btnGenNoms").disabled=false;
+  if(!res.ok){ alert("Erreur : "+(res.raison||"inconnue")); return; }
+  const rows=res.data||[];
   $("genOut").classList.remove("hidden");
   $("genMsg").textContent = rows.length+" code(s) généré(s). Envoie à chaque candidat le lien correspondant :";
-  $("genLinks").value = rows.map(r=>(r.nom? (r.nom+" : ") : "")+lienPour(r.code_perso)).join("\n");
+  $("genLinks").value = rows.map(r=>(r.nom?(r.nom+" : "):"")+lienPour(r.code_perso)).join("\n");
   chargerParticipants();
 }
-$("btnCopyLinks").addEventListener("click", ()=>copy($("genLinks").value, $("btnCopyLinks")));
+$("btnCopyLinks").onclick=()=>copy($("genLinks").value,$("btnCopyLinks"));
 
-/* ---------- Participants d'un examen ---------- */
-async function voirParticipants(code){
-  RES_CODE = code;
-  const s = SESSIONS.find(x=>x.code===code);
-  $("resHint").classList.add("hidden"); $("resPanel").classList.remove("hidden");
-  $("genOut").classList.add("hidden");
-  $("resTitle").innerHTML = 'Examen : '+esc(s?s.titre:"")+' &nbsp; <span class="code-badge">'+code+'</span>';
-  $("resCard").scrollIntoView({behavior:"smooth"});
-  await chargerParticipants();
+/* ---------- Participants ---------- */
+function gerer(code){
+  RES_CODE=code; const s=SESSIONS.find(x=>x.code===code);
+  const modeLbl = s ? ({score:"score",rien:"rien",correction:"correction"}[s.mode_resultat]||s.mode_resultat) : "";
+  $("partEmpty").classList.add("hidden"); $("partPanel").classList.remove("hidden"); $("genOut").classList.add("hidden");
+  $("partHead").innerHTML = '<b style="color:var(--navy)">'+esc(s?s.titre:"")+'</b> &nbsp; <span class="code-badge">'+code+'</span> &nbsp; <small>'+(s?(s.duree_min+" min · "+modeLbl):"")+'</small>';
+  showView('part');
+  chargerParticipants();
 }
-$("btnResRefresh").addEventListener("click", chargerParticipants);
+$("btnResRefresh").onclick=chargerParticipants;
 async function chargerParticipants(){
-  const res = await api({ action:"list_copies", session_code:RES_CODE });
+  const res=await api({action:"list_copies",session_code:RES_CODE});
   if(!res.ok){ alert("Erreur : "+res.raison); return; }
-  RES_ROWS = res.data||[];
-  const tb=$("resRows"); tb.innerHTML="";
-  let fini=0, somme=0;
+  RES_ROWS=res.data||[];
+  const tb=$("resRows"); tb.innerHTML=""; let fini=0,somme=0,enc=0;
   RES_ROWS.forEach(c=>{
-    const done=c.statut==="termine"; if(done){ fini++; somme+=(c.pct||0); }
-    const stat = done?'<span class="pill ok">terminé</span>':(c.statut==="en_cours"?'<span class="pill soon">en cours</span>':'<span class="pill grey">pas commencé</span>');
+    const done=c.statut==="termine"; if(done){fini++;somme+=(c.pct||0);} if(c.statut==="en_cours")enc++;
+    const st=done?'<span class="pill ok">terminé</span>':(c.statut==="en_cours"?'<span class="pill soon">en cours</span>':'<span class="pill grey">pas commencé</span>');
     const tr=document.createElement("tr");
-    tr.innerHTML =
-      '<td><span class="code-badge">'+c.code_perso+'</span></td>'+
-      '<td><b>'+esc(c.nom||"—")+'</b></td><td>'+esc(c.prenom||"")+'</td><td>'+esc(c.structure||"")+'</td>'+
-      '<td>'+(done?(c.score+" / "+c.total):"—")+'</td>'+
-      '<td>'+(done?(c.pct+" %"):"—")+'</td>'+
-      '<td>'+stat+'</td>'+
-      '<td>'+(c.termine_le?fmt(c.termine_le):"—")+'</td>'+
-      '<td>'+
-        '<button class="act" data-lien="'+c.code_perso+'">Lien</button>'+
-        '<button class="act" data-reset="'+c.id+'">Réinit.</button>'+
-        '<button class="act red" data-delc="'+c.id+'">Suppr.</button>'+
-      '</td>';
+    tr.innerHTML='<td><span class="code-badge">'+c.code_perso+'</span></td><td><b>'+esc(c.nom||"—")+'</b></td><td>'+esc(c.prenom||"")+'</td><td>'+esc(c.structure||"")+'</td>'+
+      '<td>'+(done?(c.score+" / "+c.total):"—")+'</td><td>'+(done?(c.pct+" %"):"—")+'</td><td>'+st+'</td><td>'+(c.termine_le?fmt(c.termine_le):"—")+'</td>'+
+      '<td><button class="iconbtn" data-lien="'+c.code_perso+'" title="Copier le lien">🔗</button>'+
+      '<button class="iconbtn" data-reset="'+c.id+'" title="Réinitialiser">↺</button>'+
+      '<button class="iconbtn danger" data-delc="'+c.id+'" title="Supprimer">🗑</button></td>';
     tb.appendChild(tr);
   });
-  $("resEmpty").textContent = RES_ROWS.length ? "" : "Aucun code pour l'instant. Génère des codes ci-dessus.";
-  const moy = fini?Math.round(somme/fini):0;
-  $("resStats").innerHTML =
-    '<div class="stat"><b>'+RES_ROWS.length+'</b><span>codes</span></div>'+
-    '<div class="stat"><b style="color:#16904E">'+fini+'</b><span>terminés</span></div>'+
-    '<div class="stat"><b>'+moy+' %</b><span>moyenne (terminés)</span></div>';
-  tb.querySelectorAll("[data-lien]").forEach(b=>b.onclick=()=>copy(lienPour(b.getAttribute("data-lien")), b));
-  tb.querySelectorAll("[data-reset]").forEach(b=>b.onclick=async()=>{
-    if(!confirm("Réinitialiser ce code ? Le candidat pourra recomposer depuis zéro.")) return;
-    const res=await api({action:"reset_copie", id:b.getAttribute("data-reset")});
-    if(res.ok) chargerParticipants(); else alert("Erreur : "+res.raison);
-  });
-  tb.querySelectorAll("[data-delc]").forEach(b=>b.onclick=async()=>{
-    if(!confirm("Supprimer ce participant (et son code) ?")) return;
-    const res=await api({action:"delete_copie", id:b.getAttribute("data-delc")});
-    if(res.ok) chargerParticipants(); else alert("Erreur : "+res.raison);
-  });
+  $("partCnt").textContent = RES_ROWS.length?(RES_ROWS.length+" code(s)"):"";
+  $("resEmpty").textContent = RES_ROWS.length?"":"Aucun code. Génère-en ci-dessus.";
+  const moy=fini?Math.round(somme/fini):0;
+  $("resStats").innerHTML = stat("Codes",RES_ROWS.length,"🎫","t-navy")+stat("En cours",enc,"⏱","t-orange")+stat("Terminés",fini,"✔","t-ok")+stat("Moyenne",moy+" %","📊","t-warn");
+  tb.querySelectorAll("[data-lien]").forEach(b=>b.onclick=()=>copy(lienPour(b.getAttribute("data-lien")),b));
+  tb.querySelectorAll("[data-reset]").forEach(b=>b.onclick=async()=>{ if(!confirm("Réinitialiser ce code ? Le candidat pourra recomposer.")) return; const r=await api({action:"reset_copie",id:b.getAttribute("data-reset")}); if(r.ok) chargerParticipants(); else alert("Erreur : "+r.raison); });
+  tb.querySelectorAll("[data-delc]").forEach(b=>b.onclick=async()=>{ if(!confirm("Supprimer ce participant et son code ?")) return; const r=await api({action:"delete_copie",id:b.getAttribute("data-delc")}); if(r.ok) chargerParticipants(); else alert("Erreur : "+r.raison); });
 }
 
 /* ---------- Export CSV ---------- */
-$("btnExport").addEventListener("click", ()=>{
+$("btnExport").onclick=()=>{
   if(!RES_ROWS.length){ alert("Aucune donnée à exporter."); return; }
   const head=["Code","Nom","Prenom","Structure","Lien","Statut","Score","Total","Pourcentage","Termine_le"];
-  const lignes=RES_ROWS.map(c=>[
-    c.code_perso, c.nom||"", c.prenom||"", c.structure||"", lienPour(c.code_perso), c.statut,
-    c.statut==="termine"?c.score:"", c.statut==="termine"?c.total:"", c.statut==="termine"?c.pct:"",
-    c.termine_le?fmt(c.termine_le):"" ]);
-  const csv=[head].concat(lignes).map(r=>r.map(v=>{ v=String(v==null?"":v); return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(";")).join("\r\n");
+  const lignes=RES_ROWS.map(c=>[c.code_perso,c.nom||"",c.prenom||"",c.structure||"",lienPour(c.code_perso),c.statut,c.statut==="termine"?c.score:"",c.statut==="termine"?c.total:"",c.statut==="termine"?c.pct:"",c.termine_le?fmt(c.termine_le):""]);
+  const csv=[head].concat(lignes).map(r=>r.map(v=>{v=String(v==null?"":v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(";")).join("\r\n");
   const blob=new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="participants_"+RES_CODE+".csv"; a.click();
-});
+};
 </script>
 </body></html>
