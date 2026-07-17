@@ -120,6 +120,22 @@ tbody tr:hover{background:#f8fafc}
 .seg button.active{background:var(--navy);color:#fff}
 .subtle{background:#f8fafc;border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px 18px;margin-bottom:16px}
 .hidden{display:none!important}
+/* Éditeur de questionnaires */
+.bank-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;background:#fff}
+.bank-item small{color:#64748b}
+.bank-item.locked{background:#f8fafc}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;vertical-align:middle}
+.pill.grey{background:#eef2f8;color:#5b6b8c}
+.ed-sec{border:1px solid var(--line);border-radius:13px;padding:14px 16px;margin:14px 0;background:#fbfcff}
+.ed-sec-head{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.ed-q{border:1px solid var(--line);border-left:3px solid var(--blue-soft);border-radius:11px;padding:12px 14px;margin:11px 0;background:#fff}
+.ed-q-head{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:4px}
+.ed-num{font-weight:800;color:var(--navy);font-size:12px;background:#eef1fb;padding:3px 9px;border-radius:6px}
+.ed-optrow{display:flex;gap:8px;align-items:center;margin:6px 0}
+.ed-optrow input[type=radio]{width:auto;flex:none;margin:0}
+.ed-opt{flex:1}
+.ed-type{width:auto;padding:7px 10px}
+#bankEditor label{display:block;font-size:12px;color:#5b6b8c;font-weight:600;margin:8px 0 3px}
 
 @media(max-width:900px){
   .sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.4)}
@@ -218,6 +234,7 @@ tbody tr:hover{background:#f8fafc}
       <div class="nav-item active" data-view="dash"><span class="ic">▤</span><span>Tableau de bord</span></div>
       <div class="nav-item" data-view="exams"><span class="ic">🗂</span><span>Examens</span></div>
       <div class="nav-item" data-view="create"><span class="ic">＋</span><span>Nouvel examen</span></div>
+      <div class="nav-item" data-view="banks"><span class="ic">📝</span><span>Questionnaires</span></div>
       <div class="nav-item" data-view="part"><span class="ic">👥</span><span>Participants &amp; codes</span></div>
     </nav>
     <div class="side-foot"><div class="side-user"><span class="ava-mini">A</span><div class="su-txt"><b>Admin</b><small>BURK-CO</small></div></div></div>
@@ -257,6 +274,30 @@ tbody tr:hover{background:#f8fafc}
             <div><label>Expire le (optionnel)</label><input id="c_exp" type="date"></div>
           </div>
           <div class="row"><button id="btnCreate" class="btn primary">Créer l'examen</button></div>
+        </div>
+      </section>
+
+      <!-- Questionnaires (éditeur) -->
+      <section class="view" id="view-banks" hidden>
+        <div id="bankList">
+          <div class="card">
+            <div class="tbar"><h2>Mes questionnaires</h2>
+              <button class="btn primary" id="btnNewBank" style="margin-left:auto">＋ Nouveau questionnaire</button></div>
+            <p class="hint" style="margin:-6px 0 10px">Crée des examens avec tes propres questions. « Power Query » est intégré (non modifiable).</p>
+            <div id="banksRows"></div>
+          </div>
+        </div>
+        <div id="bankEditor" class="hidden">
+          <div class="card">
+            <div class="tbar"><h2 id="ed_title">Questionnaire</h2>
+              <button class="btn" id="btnBankCancel" style="margin-left:auto">Retour</button>
+              <button class="btn primary" id="btnBankSave">Enregistrer</button></div>
+            <label>Titre du questionnaire</label>
+            <input id="bk_titre" placeholder="Ex. Examen Excel — niveau 1">
+            <div id="ed_sections"></div>
+            <div class="row"><button class="btn" id="btnAddSection">＋ Ajouter une section</button></div>
+            <div class="ok-note hidden" id="ed_msg"></div>
+          </div>
         </div>
       </section>
 
@@ -337,7 +378,7 @@ const FN = SUPABASE_URL.replace(/\/$/,'') + "/functions/v1/gerer-examens";
 const STORE = "burkco_exam_pass";
 const $ = (id)=>document.getElementById(id);
 let PASS="", SESSIONS=[], RES_CODE="", RES_ROWS=[], creating=false;
-const TITLES = { dash:"Tableau de bord", exams:"Examens", create:"Nouvel examen", part:"Participants & codes" };
+const TITLES = { dash:"Tableau de bord", exams:"Examens", create:"Nouvel examen", banks:"Questionnaires", part:"Participants & codes" };
 
 async function api(payload){
   try{
@@ -364,7 +405,7 @@ async function connect(){
   try{ localStorage.setItem(STORE, PASS); }catch(e){}
   $("connMsg").textContent="";
   $("loginScreen").style.display="none"; $("appArea").style.display="block";
-  SESSIONS = res.data||[]; renderDash(); renderExams();
+  SESSIONS = res.data||[]; renderDash(); renderExams(); loadBanksIntoSelect();
 }
 $("discLink").onclick = ()=>{ try{ localStorage.removeItem(STORE); }catch(e){} PASS=""; location.reload(); };
 /* reconnexion auto au chargement */
@@ -383,6 +424,8 @@ function showView(v){
   document.body.classList.remove('nav-open');
   if(v==='dash'){ renderDash(); }
   if(v==='exams'){ refresh(); }
+  if(v==='create'){ loadBanksIntoSelect(); }
+  if(v==='banks'){ renderBanks(); }
   window.scrollTo(0,0);
 }
 
@@ -447,6 +490,168 @@ $("btnCreate").onclick = async ()=>{
   await refresh();
   gerer(res.data.code);   // bascule direct vers la génération des codes
 };
+
+/* ---------- Questionnaires (éditeur de questions) ---------- */
+let BANK=null;
+function newQ(){ return { t:"qcm", q:"", code:"", o:["","",""], a:0, x:"" }; }
+
+/* Remplit le menu déroulant « Jeu de questions » de la création d'examen. */
+async function loadBanksIntoSelect(){
+  const sel=$("c_examen"); if(!sel) return;
+  const res=await api({action:"list_banks"});
+  const banks = res.ok ? (res.data||[]) : [];
+  const cur=sel.value;
+  let h='<option value="power_query">Power Query (intégré, 35 questions)</option>';
+  h += banks.map(b=>'<option value="'+esc(b.code)+'">'+esc(b.titre)+' ('+(b.nb_questions||0)+' questions)</option>').join('');
+  sel.innerHTML=h;
+  if([...sel.options].some(o=>o.value===cur)) sel.value=cur;
+}
+
+/* Liste des questionnaires. */
+async function renderBanks(){
+  $("bankEditor").classList.add("hidden"); $("bankList").classList.remove("hidden");
+  $("banksRows").innerHTML='<p class="hint">Chargement…</p>';
+  const res=await api({action:"list_banks"});
+  const banks = res.ok ? (res.data||[]) : [];
+  let h='<div class="bank-item locked"><div><b>Power Query</b> <span class="pill grey">intégré</span><br><small>35 questions · non modifiable</small></div></div>';
+  h += banks.map(b=>'<div class="bank-item"><div><b>'+esc(b.titre)+'</b><br><small>'+(b.nb_questions||0)+' question(s) · '+(b.nb_sections||0)+' section(s)</small></div>'+
+    '<div style="white-space:nowrap"><button class="btn" style="padding:7px 12px" data-edit="'+esc(b.code)+'">Modifier</button> '+
+    '<button class="iconbtn danger" data-delbank="'+esc(b.code)+'" title="Supprimer">🗑</button></div></div>').join('');
+  $("banksRows").innerHTML=h;
+  $("banksRows").querySelectorAll("[data-edit]").forEach(x=>x.onclick=()=>editBank(x.getAttribute("data-edit")));
+  $("banksRows").querySelectorAll("[data-delbank]").forEach(x=>x.onclick=async()=>{
+    if(!confirm("Supprimer définitivement ce questionnaire ?")) return;
+    const r=await api({action:"delete_bank",code:x.getAttribute("data-delbank")});
+    if(r.ok){ renderBanks(); loadBanksIntoSelect(); } else alert("Erreur : "+(r.raison||"inconnue"));
+  });
+}
+$("btnNewBank").onclick=()=>{ BANK={ code:null, titre:"", sections:[{ title:"Section 1", questions:[newQ()] }] }; openEditor(); };
+async function editBank(code){
+  const r=await api({action:"get_bank",code});
+  if(!r.ok){ alert("Erreur : "+(r.raison||"inconnue")); return; }
+  const c=r.data.contenu||{};
+  BANK={ code:r.data.code, titre:r.data.titre||"", sections:Array.isArray(c.sections)?c.sections:[] };
+  if(!BANK.sections.length) BANK.sections=[{ title:"Section 1", questions:[newQ()] }];
+  openEditor();
+}
+function openEditor(){ $("bankList").classList.add("hidden"); $("bankEditor").classList.remove("hidden"); $("ed_msg").classList.add("hidden"); renderEditor(); }
+$("btnBankCancel").onclick=()=>renderBanks();
+
+/* Construit le formulaire d'édition à partir de l'objet BANK. */
+function renderEditor(){
+  $("ed_title").textContent = BANK.code ? "Modifier le questionnaire" : "Nouveau questionnaire";
+  $("bk_titre").value = BANK.titre||"";
+  let h='';
+  BANK.sections.forEach((sec,si)=>{
+    h+='<div class="ed-sec" data-si="'+si+'"><div class="ed-sec-head"><span class="ed-num">Section '+(si+1)+'</span>'+
+       '<input class="ed-sectitle" value="'+esc(sec.title||"")+'" placeholder="Titre de la section" style="flex:1">'+
+       '<button class="iconbtn danger" data-delsec="'+si+'" title="Supprimer la section">🗑</button></div>';
+    (sec.questions||[]).forEach((q,qi)=>{
+      const isVF = q.t==="vf";
+      h+='<div class="ed-q" data-si="'+si+'" data-qi="'+qi+'"><div class="ed-q-head"><span class="ed-num">Q'+(qi+1)+'</span>'+
+         '<select class="ed-type"><option value="qcm"'+(!isVF?" selected":"")+'>QCM</option><option value="vf"'+(isVF?" selected":"")+'>Vrai / Faux</option></select>'+
+         '<span style="flex:1"></span>'+
+         '<button class="iconbtn" data-mv="up" title="Monter">↑</button>'+
+         '<button class="iconbtn" data-mv="down" title="Descendre">↓</button>'+
+         '<button class="iconbtn danger" data-delq="1" title="Supprimer la question">🗑</button></div>'+
+         '<label>Énoncé de la question</label><textarea class="ed-enonce" style="min-height:54px">'+esc(q.q||"")+'</textarea>'+
+         '<label>Code / formule à afficher (optionnel)</label><input class="ed-code" value="'+esc(q.code||"")+'" placeholder="Ex. Date.QuarterOfYear([Date])">';
+      if(isVF){
+        h+='<label>Bonne réponse</label><div class="ed-optrow">'+
+           '<label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--navy);margin:0"><input type="radio" class="ed-vf" name="c_'+si+'_'+qi+'" value="true"'+(q.a===true?" checked":"")+'> Vrai</label>'+
+           '<label style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--navy);margin:0 0 0 18px"><input type="radio" class="ed-vf" name="c_'+si+'_'+qi+'" value="false"'+(q.a===false?" checked":"")+'> Faux</label></div>';
+      }else{
+        h+='<label>Options — coche la bonne réponse</label>';
+        (q.o||[]).forEach((op,oi)=>{
+          h+='<div class="ed-optrow"><input type="radio" class="ed-correct" name="c_'+si+'_'+qi+'" data-oi="'+oi+'"'+(q.a===oi?" checked":"")+'>'+
+             '<input class="ed-opt" value="'+esc(op)+'" placeholder="Option '+(oi+1)+'">'+
+             '<button class="iconbtn danger" data-delopt="'+oi+'" title="Retirer cette option">✕</button></div>';
+        });
+        h+='<div class="row" style="margin-top:4px"><button class="btn" style="padding:6px 11px;font-size:12px" data-addopt="1">＋ Option</button></div>';
+      }
+      h+='<label>Explication (affichée dans le corrigé)</label><textarea class="ed-exp" style="min-height:42px">'+esc(q.x||"")+'</textarea></div>';
+    });
+    h+='<div class="row"><button class="btn" style="padding:7px 12px" data-addq="'+si+'">＋ Ajouter une question</button></div></div>';
+  });
+  $("ed_sections").innerHTML=h;
+  bindEditor();
+}
+
+/* (Re)branche les boutons après chaque rendu. On lit d'abord le formulaire
+   (readEditor) pour ne perdre aucune saisie, puis on modifie BANK, puis on réaffiche. */
+function bindEditor(){
+  const S=$("ed_sections");
+  S.querySelectorAll(".ed-sec").forEach(secEl=>{
+    const si=+secEl.getAttribute("data-si");
+    secEl.querySelector("[data-delsec]").onclick=()=>{ readEditor(); BANK.sections.splice(si,1); if(!BANK.sections.length) BANK.sections=[{title:"Section 1",questions:[newQ()]}]; renderEditor(); };
+    secEl.querySelector("[data-addq]").onclick=()=>{ readEditor(); BANK.sections[si].questions.push(newQ()); renderEditor(); };
+    secEl.querySelectorAll(".ed-q").forEach(qEl=>{
+      const qi=+qEl.getAttribute("data-qi");
+      qEl.querySelector(".ed-type").onchange=(e)=>{ readEditor(); const Q=BANK.sections[si].questions[qi]; Q.t=e.target.value; if(Q.t==="qcm"&&(!Q.o||!Q.o.length)) Q.o=["","",""]; renderEditor(); };
+      qEl.querySelector("[data-delq]").onclick=()=>{ readEditor(); BANK.sections[si].questions.splice(qi,1); if(!BANK.sections[si].questions.length) BANK.sections[si].questions=[newQ()]; renderEditor(); };
+      qEl.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{ readEditor(); const arr=BANK.sections[si].questions; const j=b.getAttribute("data-mv")==="up"?qi-1:qi+1; if(j<0||j>=arr.length) return; const t=arr[qi]; arr[qi]=arr[j]; arr[j]=t; renderEditor(); });
+      const addopt=qEl.querySelector("[data-addopt]"); if(addopt) addopt.onclick=()=>{ readEditor(); BANK.sections[si].questions[qi].o.push(""); renderEditor(); };
+      qEl.querySelectorAll("[data-delopt]").forEach(b=>b.onclick=()=>{ readEditor(); const Q=BANK.sections[si].questions[qi]; const oi=+b.getAttribute("data-delopt"); Q.o.splice(oi,1); if(!Q.o.length) Q.o=[""]; if(Q.a>=Q.o.length) Q.a=0; renderEditor(); });
+    });
+  });
+}
+
+/* Lit tout le formulaire et reconstruit BANK.sections. */
+function readEditor(){
+  BANK.titre=$("bk_titre").value.trim();
+  const secs=[];
+  $("ed_sections").querySelectorAll(".ed-sec").forEach(secEl=>{
+    const title=secEl.querySelector(".ed-sectitle").value.trim();
+    const questions=[];
+    secEl.querySelectorAll(".ed-q").forEach(qEl=>{
+      const t=qEl.querySelector(".ed-type").value;
+      const q=qEl.querySelector(".ed-enonce").value.trim();
+      const code=qEl.querySelector(".ed-code").value.trim();
+      const x=qEl.querySelector(".ed-exp").value.trim();
+      const obj={ t, q, x }; if(code) obj.code=code;
+      if(t==="vf"){ const c=qEl.querySelector(".ed-vf:checked"); obj.a = c ? (c.value==="true") : true; }
+      else{ obj.o=[...qEl.querySelectorAll(".ed-opt")].map(i=>i.value.trim()); const c=qEl.querySelector(".ed-correct:checked"); obj.a = c ? parseInt(c.getAttribute("data-oi"),10) : 0; }
+      questions.push(obj);
+    });
+    secs.push({ title, questions });
+  });
+  BANK.sections=secs;
+}
+$("btnAddSection").onclick=()=>{ readEditor(); BANK.sections.push({ title:"Section "+(BANK.sections.length+1), questions:[newQ()] }); renderEditor(); };
+
+/* Enregistre le questionnaire (avec vérifications). */
+$("btnBankSave").onclick=async()=>{
+  readEditor();
+  const msg=$("ed_msg");
+  if(!BANK.titre){ showEdMsg(false,"Donne un titre au questionnaire."); return; }
+  let nb=0, err="";
+  BANK.sections.forEach((s,si)=>{
+    (s.questions||[]).forEach((q,qi)=>{
+      nb++; const ref=" (Section "+(si+1)+", Q"+(qi+1)+")";
+      if(!q.q) err=err||("Une question est sans énoncé"+ref+".");
+      if(q.t!=="vf"){
+        const filled=(q.o||[]).filter(Boolean);
+        if(filled.length<2) err=err||("Une question QCM a moins de 2 options remplies"+ref+".");
+        else if(!q.o[q.a]) err=err||("La bonne réponse pointe une option vide"+ref+".");
+      }
+    });
+  });
+  if(nb===0) err=err||"Ajoute au moins une question.";
+  if(err){ showEdMsg(false,err); return; }
+  $("btnBankSave").disabled=true; $("btnBankSave").textContent="Enregistrement…";
+  const res=await api({ action:"save_bank", code:BANK.code, titre:BANK.titre, contenu:{ sections:BANK.sections } });
+  $("btnBankSave").disabled=false; $("btnBankSave").textContent="Enregistrer";
+  if(!res.ok){ showEdMsg(false,"Erreur : "+(res.raison||"inconnue")); return; }
+  BANK.code = res.data.code;
+  showEdMsg(true,"✓ Questionnaire enregistré ("+nb+" question(s)). Il apparaît maintenant dans « Jeu de questions » à la création d'un examen.");
+  loadBanksIntoSelect();
+};
+function showEdMsg(ok,txt){
+  const m=$("ed_msg"); m.classList.remove("hidden"); m.textContent=(ok?"":"⚠ ")+txt;
+  m.style.background = ok?"var(--ok-bg)":"var(--bad-bg)";
+  m.style.color = ok?"var(--ok)":"var(--bad)";
+  m.style.borderLeftColor = ok?"var(--ok)":"var(--bad)";
+}
 
 /* ---------- Générer des codes ---------- */
 $("segNombre").onclick=()=>{ $("segNombre").classList.add("active");$("segNoms").classList.remove("active");$("boxNombre").classList.remove("hidden");$("boxNoms").classList.add("hidden"); };
