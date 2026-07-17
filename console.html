@@ -1,4 +1,5 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">
 <title>BURK-CO — Console des examens</title>
 <style>
 :root{
@@ -322,6 +323,7 @@ async function api(payload){
 }
 function lienPour(code){ if(!EXAM_URL) return "code : "+code; const s=EXAM_URL.indexOf("?")>=0?"&":"?"; return EXAM_URL+s+"code="+code; }
 function copy(txt,btn){ navigator.clipboard.writeText(txt).then(()=>{ const t=btn.textContent; btn.textContent="Copié !"; setTimeout(()=>btn.textContent=t,1200); }); }
+function flash(btn,txt){ const o=btn.textContent; btn.textContent=txt; btn.disabled=true; setTimeout(()=>{ btn.textContent=o; btn.disabled=false; },1100); }
 function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function fmt(iso){ try{ const d=new Date(iso); return d.toLocaleDateString('fr-FR')+" "+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return iso; } }
 
@@ -360,6 +362,7 @@ function showView(v){
 
 /* ---------- Données ---------- */
 async function refresh(){ const res=await api({action:"list_sessions"}); if(res.ok){ SESSIONS=res.data||[]; renderDash(); renderExams(); } }
+$("btnRefresh").onclick=()=>{ refresh(); flash($("btnRefresh"),"Actualisé ✓"); };
 
 function renderDash(){
   let nAct=0,nPart=0,nFini=0;
@@ -446,7 +449,7 @@ function gerer(code){
   showView('part');
   chargerParticipants();
 }
-$("btnResRefresh").onclick=chargerParticipants;
+$("btnResRefresh").onclick=()=>{ chargerParticipants(); flash($("btnResRefresh"),"Actualisé ✓"); };
 async function chargerParticipants(){
   const res=await api({action:"list_copies",session_code:RES_CODE});
   if(!res.ok){ alert("Erreur : "+res.raison); return; }
@@ -520,6 +523,7 @@ $("btnExport").onclick=()=>{
   const csv=[head].concat(lignes).map(r=>r.map(v=>{v=String(v==null?"":v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}).join(";")).join("\r\n");
   const blob=new Blob(["﻿"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="participants_"+RES_CODE+".csv"; a.click();
+  flash($("btnExport"),"Exporté ✓");
 };
 </script>
 </body></html>
