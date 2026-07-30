@@ -264,7 +264,7 @@ tbody tr:hover{background:#f8fafc}
           <div class="formgrid">
             <div><label>Intitulé de l'examen</label><input id="c_titre" value="Examen final — Formation Power Query"></div>
             <div><label>Client / Organisation</label><input id="c_client" value="Coris Bank International Holding"></div>
-            <div><label>Jeu de questions</label><select id="c_examen"><option value="power_query">Power Query (35 questions)</option></select></div>
+            <div><label>Jeu de questions</label><select id="c_examen"><option value="power_query">Power Query (35 questions)</option><option value="power_bi">Power BI (30 questions)</option></select></div>
             <div><label>Durée (minutes)</label><input id="c_duree" type="number" value="45" min="5"></div>
             <div><label>Ce que voit le candidat à la fin</label><select id="c_mode">
               <option value="score" selected>Son score uniquement</option>
@@ -501,7 +501,8 @@ async function loadBanksIntoSelect(){
   const res=await api({action:"list_banks"});
   const banks = res.ok ? (res.data||[]) : [];
   const cur=sel.value;
-  let h='<option value="power_query">Power Query (intégré, 35 questions)</option>';
+  let h='<option value="power_query">Power Query (intégré, 35 questions)</option>'+
+        '<option value="power_bi">Power BI (intégré, 30 questions)</option>';
   h += banks.map(b=>'<option value="'+esc(b.code)+'">'+esc(b.titre)+' ('+(b.nb_questions||0)+' questions)</option>').join('');
   sel.innerHTML=h;
   if([...sel.options].some(o=>o.value===cur)) sel.value=cur;
